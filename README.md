@@ -9,6 +9,20 @@
 [![GitHub Stars](https://img.shields.io/github/stars/ProductionLineHQ/cortex?style=social)](https://github.com/ProductionLineHQ/cortex)
 [![CI](https://img.shields.io/github/actions/workflow/status/ProductionLineHQ/cortex/ci.yml?label=CI)](https://github.com/ProductionLineHQ/cortex/actions)
 
+<p align="center">
+  <img src="assets/cortex-hero.png" alt="Cortex — Claude Code finally remembers" width="100%">
+</p>
+
+---
+
+<p align="center">
+  <img src="assets/cortex-dashboard.png" alt="Cortex Dashboard — Memory management for all your projects" width="100%">
+</p>
+
+<p align="center">
+  <em>Dashboard: 247 memories across 6 projects, synced across 2 machines</em>
+</p>
+
 ---
 
 ## The Problem
