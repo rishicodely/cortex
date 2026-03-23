@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/install.sh", "destination": "/api/install" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/public/$1" }
+  ],
+  "env": {
+    "BEEHIIV_API_KEY": "@beehiiv-api-key",
+    "BEEHIIV_PUBLICATION_ID": "@beehiiv-pub-id"
+  }
+}
