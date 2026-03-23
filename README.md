@@ -4,7 +4,7 @@
 
 **Every time you open Claude Code, it forgets everything. Cortex fixes that.**
 
-[![npm version](https://img.shields.io/npm/v/@cortex-memory/cli?color=cb3837&label=npm)](https://www.npmjs.com/package/@cortex-memory/cli)
+[![npm version](https://img.shields.io/npm/v/@cortex.memory/cli?color=cb3837&label=npm)](https://www.npmjs.com/package/@cortex.memory/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/ProductionLineHQ/cortex?style=social)](https://github.com/ProductionLineHQ/cortex)
 [![CI](https://img.shields.io/github/actions/workflow/status/ProductionLineHQ/cortex/ci.yml?label=CI)](https://github.com/ProductionLineHQ/cortex/actions)
@@ -49,10 +49,10 @@ Cortex is a persistent memory layer that runs as a local daemon alongside Claude
 
 ```bash
 # Install via npx
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 
 # Or install globally
-npm install -g @cortex-memory/cli
+npm install -g @cortex.memory/cli
 cortex init
 ```
 

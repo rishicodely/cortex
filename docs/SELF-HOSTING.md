@@ -35,7 +35,7 @@ Cortex is a lightweight process. The SQLite database grows slowly -- a typical d
 The fastest way to get started:
 
 ```bash
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 ```
 
 This downloads the CLI, creates `~/.cortex/`, initializes the database, and registers the MCP server with Claude Code.
@@ -45,7 +45,7 @@ This downloads the CLI, creates `~/.cortex/`, initializes the database, and regi
 For a permanent CLI installation:
 
 ```bash
-npm install -g @cortex-memory/cli
+npm install -g @cortex.memory/cli
 cortex init
 ```
 
@@ -147,7 +147,7 @@ cat > ~/Library/LaunchAgents/com.cortex.daemon.plist << 'EOF'
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/node</string>
-        <string>/usr/local/lib/node_modules/@cortex-memory/server/dist/index.js</string>
+        <string>/usr/local/lib/node_modules/@cortex.memory/server/dist/index.js</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -194,7 +194,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /usr/local/lib/node_modules/@cortex-memory/server/dist/index.js
+ExecStart=/usr/bin/node /usr/local/lib/node_modules/@cortex.memory/server/dist/index.js
 Restart=on-failure
 RestartSec=5
 Environment=CORTEX_LOG_LEVEL=info
@@ -361,7 +361,7 @@ cortex status --json | jq '.schema_version'
 cortex upgrade --check-only
 
 # Upgrade
-npm install -g @cortex-memory/cli@latest
+npm install -g @cortex.memory/cli@latest
 ```
 
 ### From Source
@@ -427,7 +427,7 @@ rm -rf ~/.cortex
 # Edit ~/.claude/settings.json and remove the "cortex" entry from mcpServers
 
 # 4. Remove the CLI
-npm uninstall -g @cortex-memory/cli
+npm uninstall -g @cortex.memory/cli
 ```
 
 ### Zero Footprint

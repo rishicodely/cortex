@@ -61,28 +61,28 @@ pass "All packages built"
 # ── Step 1: Publish to npm ──
 header "STEP 1: NPM PUBLISH"
 
-info "Publishing @cortex-memory/shared..."
+info "Publishing @cortex.memory/shared..."
 cd packages/shared
 npm publish --access public 2>&1 | tail -3
-pass "@cortex-memory/shared published"
+pass "@cortex.memory/shared published"
 cd "$REPO_ROOT"
 
-info "Publishing @cortex-memory/server..."
+info "Publishing @cortex.memory/server..."
 cd packages/server
 npm publish --access public 2>&1 | tail -3
-pass "@cortex-memory/server published"
+pass "@cortex.memory/server published"
 cd "$REPO_ROOT"
 
-info "Publishing @cortex-memory/cli..."
+info "Publishing @cortex.memory/cli..."
 cd packages/cli
 npm publish --access public 2>&1 | tail -3
-pass "@cortex-memory/cli published"
+pass "@cortex.memory/cli published"
 cd "$REPO_ROOT"
 
 # ── Step 2: Verify npm install works ──
 header "STEP 2: VERIFY NPM INSTALL"
-info "Testing: npx @cortex-memory/cli --version"
-NPM_VERSION=$(npx --yes @cortex-memory/cli --version 2>/dev/null || echo "FAILED")
+info "Testing: npx @cortex.memory/cli --version"
+NPM_VERSION=$(npx --yes @cortex.memory/cli --version 2>/dev/null || echo "FAILED")
 if [ "$NPM_VERSION" = "FAILED" ]; then
   fail "npx install failed — check npm publish output above"
 else
@@ -92,7 +92,7 @@ fi
 # ── Step 3: Compute Homebrew SHA ──
 header "STEP 3: HOMEBREW SHA"
 info "Downloading tarball from npm..."
-TARBALL_URL=$(npm view @cortex-memory/cli dist.tarball 2>/dev/null)
+TARBALL_URL=$(npm view @cortex.memory/cli dist.tarball 2>/dev/null)
 if [ -n "$TARBALL_URL" ]; then
   curl -sO "$TARBALL_URL"
   TARBALL_FILE=$(basename "$TARBALL_URL")
@@ -121,7 +121,7 @@ The first release of Cortex — persistent memory for Claude Code.
 ### Install
 
 ```bash
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 ```
 
 ### What's included
@@ -186,9 +186,9 @@ echo "  ╔═══════════════════════
 echo "  ║                                                   ║"
 echo "  ║   Cortex v1.0.0 is LIVE                          ║"
 echo "  ║                                                   ║"
-echo "  ║   npm:    @cortex-memory/cli                      ║"
+echo "  ║   npm:    @cortex.memory/cli                      ║"
 echo "  ║   repo:   github.com/ProductionLineHQ/cortex      ║"
-echo "  ║   install: npx @cortex-memory/cli init            ║"
+echo "  ║   install: npx @cortex.memory/cli init            ║"
 echo "  ║                                                   ║"
 echo "  ╚═══════════════════════════════════════════════════╝"
 echo ""

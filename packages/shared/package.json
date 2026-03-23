@@ -1,5 +1,5 @@
 {
-  "name": "@cortex/shared",
+  "name": "@cortex.memory/shared",
   "version": "1.0.0",
   "description": "Shared types, schemas, constants, and utilities for Cortex",
   "type": "module",
@@ -12,7 +12,7 @@
     }
   },
   "publishConfig": {
-    "name": "@cortex-memory/shared",
+    "name": "@cortex.memory/shared",
     "access": "public"
   },
   "author": "The Production Line <koundinya@theproductionline.com>",

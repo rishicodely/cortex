@@ -13,7 +13,7 @@ set -euo pipefail
 CORTEX_VERSION="1.0.0"
 CORTEX_HOME="${HOME}/.cortex"
 CORTEX_PORT=7434
-CORTEX_PKG="@cortex-memory/cli"
+CORTEX_PKG="@cortex.memory/cli"
 DRY_RUN=false
 
 # ── Parse flags ──────────────────────────────────────────────────────────────
@@ -137,7 +137,7 @@ fi
 run "mkdir -p '${CORTEX_HOME}/logs'"
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Step 4: Install @cortex-memory/cli via npm
+# Step 4: Install @cortex.memory/cli via npm
 # ═══════════════════════════════════════════════════════════════════════════════
 if command -v cortex &>/dev/null; then
   EXISTING_VERSION=$(cortex --version 2>/dev/null || echo "unknown")

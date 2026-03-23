@@ -29,7 +29,7 @@ The first time this happened, I sat there for a few seconds staring at the termi
 ## Install (subscriber exclusive)
 
 ```bash
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 ```
 
 One command. 30 seconds. That's it.

@@ -1,11 +1,11 @@
 class Cortex < Formula
   desc "Persistent memory layer for Claude Code — remembers context across sessions"
   homepage "https://cortex.sh"
-  url "https://registry.npmjs.org/@cortex-memory/cli/-/cli-1.0.0.tgz"
+  url "https://registry.npmjs.org/@cortex.memory/cli/-/cli-1.0.0.tgz"
   # SHA256 must be updated after each npm publish:
-  # curl -sO https://registry.npmjs.org/@cortex-memory/cli/-/cli-1.0.0.tgz
+  # curl -sO https://registry.npmjs.org/@cortex.memory/cli/-/cli-1.0.0.tgz
   # shasum -a 256 cli-1.0.0.tgz
-  sha256 "PLACEHOLDER_SHA256_COMPUTE_AFTER_NPM_PUBLISH"
+  sha256 ""
   license "MIT"
 
   depends_on "node@18"

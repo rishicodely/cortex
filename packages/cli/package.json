@@ -1,5 +1,5 @@
 {
-  "name": "@cortex/cli",
+  "name": "@cortex.memory/cli",
   "version": "1.0.0",
   "description": "Cortex CLI — persistent memory for Claude Code and AI agents",
   "type": "module",
@@ -8,7 +8,7 @@
   },
   "main": "./dist/index.js",
   "publishConfig": {
-    "name": "@cortex-memory/cli",
+    "name": "@cortex.memory/cli",
     "access": "public"
   },
   "author": "The Production Line <koundinya@theproductionline.com>",

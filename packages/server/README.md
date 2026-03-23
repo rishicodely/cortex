@@ -1,4 +1,4 @@
-# @cortex-memory/server
+# @cortex.memory/server
 
 Cortex daemon -- MCP server, REST API, SQLite memory database, and Turso sync.
 
@@ -7,7 +7,7 @@ Cortex gives Claude Code persistent memory across sessions. The server manages t
 ## Install
 
 ```bash
-npm install -g @cortex-memory/server
+npm install -g @cortex.memory/server
 ```
 
 ## Usage

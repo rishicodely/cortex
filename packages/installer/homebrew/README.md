@@ -38,12 +38,12 @@ brew untap ProductionLineHQ/cortex
 
 This tap is published at [github.com/ProductionLineHQ/homebrew-cortex](https://github.com/ProductionLineHQ/homebrew-cortex).
 
-The formula pulls `@cortex-memory/cli` from the npm registry.
+The formula pulls `@cortex.memory/cli` from the npm registry.
 
 ## Publishing a new version
 
 1. Publish new version to npm: `pnpm -F @cortex/cli publish`
-2. Download the tarball: `curl -O https://registry.npmjs.org/@cortex-memory/cli/-/cli-X.Y.Z.tgz`
+2. Download the tarball: `curl -O https://registry.npmjs.org/@cortex.memory/cli/-/cli-X.Y.Z.tgz`
 3. Get SHA256: `shasum -a 256 cli-X.Y.Z.tgz`
 4. Update `cortex.rb`: version URL and sha256
 5. Push to this repo

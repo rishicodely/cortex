@@ -26,7 +26,7 @@ Key design decisions:
 - Local-first: SQLite on your machine. Nothing leaves unless you enable sync.
 - Quality gate: 6-rule engine prevents garbage memories (length, duplicates, sensitive data, quality score).
 - Multi-machine sync: Optional Turso-powered sync. You own the database — we never see your data.
-- One command install: `npx @cortex-memory/cli init`
+- One command install: `npx @cortex.memory/cli init`
 
 Tech stack: TypeScript monorepo (9 packages), SQLite via better-sqlite3, Fastify REST API, MCP protocol, Next.js dashboard, SwiftUI Mac app, VS Code extension.
 
@@ -58,7 +58,7 @@ What it does:
 - Optional multi-machine sync via Turso (you own the DB)
 
 One command install:
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 
 Open source (MIT): https://github.com/ProductionLineHQ/cortex
 
@@ -92,7 +92,7 @@ Thread: 🧵
 
 Every Claude Code session starts from zero. No memory of yesterday. Cortex fixes that.
 
-One command: npx @cortex-memory/cli init
+One command: npx @cortex.memory/cli init
 
 github.com/ProductionLineHQ/cortex
 
@@ -155,7 +155,7 @@ Your AI starts every conversation fully informed.
 
 If you use Claude Code, give it a try:
 
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 
 Star if useful: github.com/ProductionLineHQ/cortex
 
@@ -179,7 +179,7 @@ Key principles:
 → Local-first: SQLite on your machine, nothing leaves unless you enable sync
 → Quality-gated: 6-rule engine prevents low-quality or duplicate memories
 → Privacy-respecting: zero telemetry, you own your data, clean uninstall
-→ One command install: npx @cortex-memory/cli init
+→ One command install: npx @cortex.memory/cli init
 
 For CTOs and engineering leaders: this is the tool that makes your team's AI investment compound over time instead of resetting every morning.
 
@@ -205,7 +205,7 @@ I Built Persistent Memory for Claude Code — Here's the Architecture
 5. Sync architecture (Turso, conflict resolution)
 6. Security model (local-first, encrypted credentials)
 7. What's next (roadmap)
-8. Try it: `npx @cortex-memory/cli init`
+8. Try it: `npx @cortex.memory/cli init`
 
 ---
 

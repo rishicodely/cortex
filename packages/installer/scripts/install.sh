@@ -22,7 +22,7 @@ case "$OS" in
   linux)  PLATFORM="linux" ;;
   *)
     echo "✗ Unsupported OS: $OS"
-    echo "  Cortex supports macOS and Linux. For Windows, use npx @cortex-memory/cli init"
+    echo "  Cortex supports macOS and Linux. For Windows, use npx @cortex.memory/cli init"
     exit 1
     ;;
 esac
@@ -54,10 +54,10 @@ fi
 echo "✓ Node.js v$(node --version)"
 
 # ── Install via npm ──
-echo "· Installing @cortex-memory/cli..."
-npm install -g @cortex-memory/cli 2>/dev/null || {
+echo "· Installing @cortex.memory/cli..."
+npm install -g @cortex.memory/cli 2>/dev/null || {
   echo "⚡ Global npm install failed. Trying with sudo..."
-  sudo npm install -g @cortex-memory/cli
+  sudo npm install -g @cortex.memory/cli
 }
 
 # ── Run init ──

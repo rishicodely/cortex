@@ -1199,7 +1199,7 @@ program
     const currentVersion = VERSION;
 
     try {
-      const res = await fetch('https://registry.npmjs.org/@cortex-memory/cli/latest', {
+      const res = await fetch('https://registry.npmjs.org/@cortex.memory/cli/latest', {
         signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) {
@@ -1215,10 +1215,10 @@ program
       } else {
         fmt.warn(`Update available: ${currentVersion} -> ${latestVersion}`);
         if (opts.checkOnly) {
-          fmt.info(`Run: npm install -g @cortex-memory/cli@${latestVersion}`);
+          fmt.info(`Run: npm install -g @cortex.memory/cli@${latestVersion}`);
         } else {
           fmt.info(`Run this command to upgrade:`);
-          fmt.info(`  npm install -g @cortex-memory/cli@${latestVersion}`);
+          fmt.info(`  npm install -g @cortex.memory/cli@${latestVersion}`);
         }
       }
     } catch {

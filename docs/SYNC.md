@@ -258,7 +258,7 @@ On your second machine:
 
 ```bash
 # 1. Install Cortex
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 
 # 2. Verify subscription
 cortex subscribe your@email.com

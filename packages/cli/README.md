@@ -9,10 +9,10 @@ Persistent memory for Claude Code. Cortex gives your AI agent memory that surviv
 brew install ProductionLineHQ/tap/cortex
 
 # npx (no install)
-npx @cortex-memory/cli init
+npx @cortex.memory/cli init
 
 # npm global
-npm install -g @cortex-memory/cli
+npm install -g @cortex.memory/cli
 
 # curl
 curl -fsSL https://cortex.sh/install.sh | sh

@@ -1,5 +1,5 @@
 {
-  "name": "@cortex/server",
+  "name": "@cortex.memory/server",
   "version": "1.0.0",
   "description": "Cortex daemon — MCP server, REST API, SQLite, sync, summarizer",
   "type": "module",
@@ -15,7 +15,7 @@
     }
   },
   "publishConfig": {
-    "name": "@cortex-memory/server",
+    "name": "@cortex.memory/server",
     "access": "public"
   },
   "author": "The Production Line <koundinya@theproductionline.com>",
