@@ -62,7 +62,7 @@ export default function OverviewPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[var(--text)]">{p.name}</p>
                     <p className="text-[11px] text-[var(--text3)] truncate">
-                      {p.tech_stack?.join(' · ') || 'No tech stack set'}
+                      {(() => { try { const ts = typeof p.tech_stack === 'string' ? JSON.parse(p.tech_stack) : p.tech_stack; return Array.isArray(ts) && ts.length > 0 ? ts.join(' · ') : 'No tech stack set'; } catch { return 'No tech stack set'; } })()}
                     </p>
                   </div>
                   <span className="font-mono text-[11px] text-[var(--text3)] bg-[var(--bg2)] border border-[var(--border)] px-2 py-0.5 rounded">

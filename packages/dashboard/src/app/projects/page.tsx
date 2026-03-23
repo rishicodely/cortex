@@ -67,9 +67,9 @@ export default function ProjectsPage() {
               </p>
             )}
 
-            {project.tech_stack && project.tech_stack.length > 0 && (
+            {(() => { try { const ts = typeof project.tech_stack === 'string' ? JSON.parse(project.tech_stack) : project.tech_stack; return Array.isArray(ts) && ts.length > 0 ? ts : null; } catch { return null; } })() && (
               <div className="flex gap-1.5 flex-wrap mb-3">
-                {project.tech_stack.map((tech: string) => (
+                {(typeof project.tech_stack === 'string' ? JSON.parse(project.tech_stack) : project.tech_stack).map((tech: string) => (
                   <span
                     key={tech}
                     className="text-[10px] text-[var(--accent2)] bg-[rgba(124,111,224,0.08)] px-2 py-0.5 rounded-full"
