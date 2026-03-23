@@ -1,0 +1,169 @@
+# Installation
+
+## Prerequisites
+
+- **Node.js 18+** — check with `node --version`
+- **Claude Code** installed and working — check with `claude --version`
+- **git** (recommended but not required) — used for project detection
+
+## Install Methods
+
+### Homebrew (macOS)
+
+```bash
+brew tap ProductionLineHQ/cortex
+brew install cortex-memory
+```
+
+### npx (any platform)
+
+```bash
+npx @cortex.memory/cli init
+```
+
+This downloads and runs the CLI in one step. It creates the config directory, starts the daemon, and registers the MCP server with Claude Code.
+
+### curl (automated environments, CI)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ProductionLineHQ/cortex/main/scripts/install.sh | sh
+```
+
+## Post-Install Setup
+
+After installing, initialize Cortex in your project:
+
+```bash
+cd your-project
+cortex init
+```
+
+This does three things:
+1. Detects your project name (from git remote, package.json, or directory name)
+2. Registers the project in your local Cortex database
+3. Confirms the MCP server is accessible to Claude Code
+
+## Verify Installation
+
+Run the diagnostic command:
+
+```bash
+cortex doctor
+```
+
+A healthy install looks like this:
+
+```
+Cortex Doctor v1.0.0
+────────────────────
+
+Checking daemon...
+  ✓ Daemon running (PID 12847)
+  ✓ Uptime: 2h 14m
+
+Checking MCP server...
+  ✓ MCP server registered with Claude Code
+  ✓ Listening on localhost:7434
+  ✓ 5 tools available
+
+Checking database...
+  ✓ Database exists (~/.cortex/cortex.db)
+  ✓ Schema version: 1
+  ✓ Size: 248 KB
+
+Checking dashboard...
+  ✓ Dashboard available at http://localhost:7433
+
+All checks passed. Cortex is healthy.
+```
+
+## Troubleshooting
+
+### Daemon not starting
+
+The daemon runs as a background process. If it fails to start:
+
+```bash
+# Check for error output
+cortex logs
+
+# Try starting manually with verbose output
+cortex start --verbose
+
+# Common fix: kill any orphaned process on the port
+lsof -i :7434
+kill <PID>
+cortex start
+```
+
+### Port conflict on 7434
+
+Another process is using the default MCP server port.
+
+```bash
+# Find what's using the port
+lsof -i :7434
+
+# Option 1: Kill the other process
+# Option 2: Change the Cortex port
+cortex config set port 7435
+cortex restart
+```
+
+### Permission error on ~/.cortex
+
+The config directory needs to be writable by your user.
+
+```bash
+# Fix permissions
+chmod -R u+rwX ~/.cortex
+
+# If the directory was created by root (common with sudo installs)
+sudo chown -R $(whoami) ~/.cortex
+```
+
+### Claude Code not detecting MCP server
+
+The MCP registration might have failed. Re-register manually:
+
+```bash
+# Check current MCP registrations
+claude mcp list
+
+# Re-register Cortex
+cortex init --force
+
+# Restart Claude Code after registration
+```
+
+### Node version mismatch
+
+Cortex requires Node.js 18 or higher. The error message will tell you what version you have.
+
+```bash
+# Check your version
+node --version
+
+# If using nvm
+nvm install 22
+nvm use 22
+
+# Then re-install
+npx @cortex.memory/cli init
+```
+
+## Uninstall
+
+```bash
+cortex uninstall
+```
+
+This removes everything: database, daemon, config directory, and MCP registration. Before deletion, it offers to export all your memories to a JSON file. Nothing is left behind.
+
+If you installed via Homebrew:
+
+```bash
+cortex uninstall
+brew uninstall cortex-memory
+brew untap ProductionLineHQ/cortex
+```

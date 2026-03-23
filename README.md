@@ -4,7 +4,9 @@
 
 Claude Code forgets everything between sessions. Your architecture, your preferences, every decision you made yesterday — gone. Cortex is a local MCP server that captures context during your sessions and feeds it back automatically. Your AI starts every conversation knowing exactly where you left off.
 
-<!-- DEMO GIF: record with vhs or asciinema, replace this line -->
+<p align="center">
+  <img src="assets/cortex-demo.gif" alt="Cortex demo — install, status, show memories, search" width="100%">
+</p>
 
 <p align="center">
   <a href="https://www.theproductionline.ai/tools/cortex"><strong>Product Page</strong></a> &nbsp;·&nbsp;
@@ -29,11 +31,11 @@ If Cortex is useful to you, a star helps other engineers find it.
 
 ## The Problem
 
-Claude Code has amnesia. Every session starts from zero. You explain your architecture, your naming conventions, the tech stack, why you chose Turso over PlanetScale — and tomorrow it asks the same questions again.
+Claude Code forgets context between sessions. Every conversation starts from zero. You explain your architecture, your naming conventions, the tech stack, why you chose Turso over PlanetScale — and tomorrow it asks the same questions again. Claude Code loses context when the session ends, completely.
 
-For most engineers, this means 15 to 30 minutes of wasted context-setting every morning. You are paying for a genius contractor who forgets everything overnight. Claude Code memory does not persist. Session memory disappears the moment you close the terminal.
+For most engineers, this means 15 to 30 minutes of wasted context-setting every morning. You are paying for a genius contractor who forgets everything overnight. There is no built-in way to give Claude Code persistent memory. Session memory disappears the moment you close the terminal. If you have searched for how to give Claude Code memory that persists across sessions, you have found the right tool.
 
-Cortex gives Claude Code persistent context. It runs silently in the background, captures the decisions and preferences that matter, and injects them back at the start of every future session. No manual note-taking, no pasting old conversations, no context files you have to maintain.
+Cortex is an MCP server that provides context persistence for Claude Code. It runs silently in the background, captures the decisions and preferences that matter, and injects them back at the start of every future session. No manual note-taking, no pasting old conversations, no context files you have to maintain. Your AI coding assistant finally has memory between sessions.
 
 ## Install
 
@@ -208,15 +210,15 @@ Run `cortex help <command>` for detailed usage of any command.
 
 **Does this send my code to your servers?**
 
-No. Cortex runs entirely on your machine. The MCP server listens on localhost only. Your memories are stored in a local SQLite database at `~/.cortex/cortex.db`. The only time data leaves your machine is if you explicitly enable Turso sync — and even then, you create the Turso database yourself and own the credentials. We never see your data.
+No. Cortex runs entirely on your machine. The MCP server listens on localhost only — it is one of the few MCP tools for context persistence that is fully local. Your memories are stored in a SQLite database at `~/.cortex/cortex.db`. The only time data leaves your machine is if you explicitly enable Turso sync, and even then, you create the database yourself and own the credentials. We never see your data.
 
 **What happens if I uninstall?**
 
-Run `cortex uninstall`. It removes the database, stops the daemon, deletes the config directory, and unregisters the MCP server from Claude Code. Before deletion, it offers to export all your memories to a JSON file. Nothing is left behind. If you installed via Homebrew, also run `brew uninstall cortex-memory`.
+Run `cortex uninstall`. It removes the database, stops the daemon, deletes the config directory, and unregisters the MCP server from Claude Code. Before deletion, it offers to export all your memories to a JSON file. Nothing is left behind. If you installed via Homebrew, also run `brew uninstall cortex-memory`. Your Claude Code project context across sessions is exported as JSON so nothing is lost.
 
 **Does it work with projects that don't use git?**
 
-Yes. Cortex uses a 4-layer project detection strategy: git remote URL (most reliable), package.json name field, directory name, or manual assignment via `cortex init --name my-project`. Git is preferred but not required.
+Yes. Cortex uses a 4-layer project detection strategy: git remote URL (most reliable), package.json name field, directory name, or manual assignment via `cortex init --name my-project`. Git is preferred for consistent project identification but is not required. The goal is to give every project its own persistent memory space regardless of your version control setup.
 
 **How is this different from just keeping a notes file?**
 
@@ -229,6 +231,16 @@ No. The MCP server runs as a separate process on localhost. Context injection ad
 **Can I see what's been stored?**
 
 Yes. Run `cortex show` to browse all memories for the current project, or `cortex search <query>` to find specific memories across all projects. The web dashboard at `localhost:7433` gives you a visual interface to browse, edit, delete, and export everything. Every memory includes its type, importance score, creation date, and tags. Nothing is hidden.
+
+## Used by
+
+Teams and engineers using Cortex on production codebases.
+
+| Who | Stack | Memories |
+|-----|-------|----------|
+| *Your project here* | — | — |
+
+Using Cortex? Open a PR to add yourself, or share your setup on [Twitter/X with #cortexmemory](https://twitter.com/intent/tweet?text=Using%20Cortex%20for%20persistent%20Claude%20Code%20memory%20%23cortexmemory&url=https://github.com/ProductionLineHQ/cortex).
 
 ## Contributing
 

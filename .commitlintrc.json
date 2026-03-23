@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/commitlintrc.json",
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "scope-enum": [
+      2,
+      "always",
+      ["server", "cli", "shared", "dashboard", "desktop", "electron", "vscode", "installer", "web", "docs", "ci", "release"]
+    ],
+    "body-max-line-length": [0, "always", 200]
+  }
+}

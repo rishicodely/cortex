@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use Cortex in your research or tooling, please cite it using the metadata below."
+type: software
+title: "Cortex: Persistent Memory for Claude Code"
+version: 1.0.0
+date-released: "2025-03-22"
+url: "https://www.theproductionline.ai/tools/cortex"
+repository-code: "https://github.com/ProductionLineHQ/cortex"
+abstract: >-
+  Cortex is an open-source persistent memory layer for Claude Code that operates
+  via the Model Context Protocol. It captures architectural decisions, coding
+  preferences, and project context during coding sessions, validates them through
+  a 7-rule quality gate, and injects relevant context into future sessions
+  automatically. All data is stored locally in SQLite with optional multi-machine
+  synchronization via Turso.
+keywords:
+  - persistent memory
+  - claude code
+  - model context protocol
+  - mcp server
+  - ai coding assistant
+  - session memory
+  - context management
+  - developer tools
+  - sqlite
+  - local-first software
+license: MIT
+authors:
+  - family-names: Lanka
+    given-names: Koundinya
+    affiliation: "The Production Line"
