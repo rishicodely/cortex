@@ -1,0 +1,75 @@
+# Frequently Asked Questions
+
+## Privacy & Security
+
+### Does Cortex send my code to any server?
+
+No. Cortex runs entirely on your machine. The MCP server listens on localhost only — no external network connections. Your memories are stored in a local SQLite database. The only time data leaves your machine is if you explicitly enable Turso sync, and even then, you create the database yourself and own the credentials.
+
+### What data does Cortex store?
+
+Memories only. Cortex stores the structured memories that Claude Code saves during sessions — decisions, preferences, context, threads, errors, and learnings. It does not store your source code, your conversation transcripts, or your file contents. Each memory is a short text (50–2000 characters) with metadata.
+
+### Can Cortex access my API keys or passwords?
+
+No, and it actively prevents this. The quality gate includes a sensitive data blocker that rejects any memory containing patterns that look like API keys, passwords, tokens, private keys, or credentials. If Claude tries to save a memory containing a secret, Cortex rejects it with a specific error message.
+
+### Is the Turso sync encrypted?
+
+Yes. Data in transit uses TLS (the same encryption as HTTPS). Turso auth tokens are stored locally encrypted with AES-256-GCM. The Turso platform encrypts data at rest. You own the database and can delete it at any time from the Turso dashboard.
+
+### Does Cortex have telemetry?
+
+No. Zero analytics, zero crash reporting, zero phone-home behavior. The daemon makes no outbound network requests unless sync is enabled (which goes only to your Turso database).
+
+## Installation & Setup
+
+### Does it work with projects that don't use git?
+
+Yes. Cortex uses a 4-layer project detection strategy: git remote URL (most reliable), package.json name field, directory name, or manual assignment via `cortex init --name my-project`. Git is preferred for consistency across branches but is not required.
+
+### Can I use Cortex with multiple projects?
+
+Yes. Each project gets its own memory space. Cortex auto-detects which project you are in based on the working directory. Run `cortex init` in each project directory once. After that, context injection is project-specific — memories from project A are not injected into project B.
+
+### Does it work on Windows?
+
+Yes, via npx or the curl install script. The Homebrew method is macOS only. The daemon, MCP server, and CLI work on Windows, macOS, and Linux. The SwiftUI desktop app is macOS only.
+
+### What Node.js version do I need?
+
+Node.js 18 or higher. Check with `node --version`. If you use nvm, run `nvm install 22` for the latest LTS.
+
+### Can I run Cortex alongside other MCP servers?
+
+Yes. MCP servers are independent processes with separate port bindings. Cortex uses port 7434 by default and does not interfere with other MCP servers. If you have a port conflict, change it with `cortex config set port <number>`.
+
+## Usage
+
+### How is this different from just keeping a notes file?
+
+A notes file requires you to remember to write things down, organize them, and paste them into every Claude Code session. Cortex captures context automatically during your normal workflow, validates it through a quality gate, categorizes it by type, and injects it without you doing anything. It also handles deduplication, expiration, importance scoring, and cross-project search.
+
+### Will this slow down Claude Code?
+
+No. The MCP server runs as a separate process on localhost. Context injection adds roughly 50–100 milliseconds to session startup. Memory saves happen asynchronously. The quality gate and summarizer run after your session ends.
+
+### Can I see what Cortex has stored?
+
+Yes. Run `cortex show` for the current project or `cortex search <query>` across all projects. The web dashboard at localhost:7433 provides a visual interface. Every memory shows its type, importance, creation date, source, and tags.
+
+### Can I edit or delete memories?
+
+Yes. `cortex edit <id>` opens a memory in your editor. `cortex delete <id>` removes a specific memory. `cortex clear` deletes all memories for a project (with backup prompt). The dashboard also supports bulk editing and deletion.
+
+### What happens to memories when I switch git branches?
+
+Memories are scoped to the project, not the branch. A decision made on a feature branch is still relevant when you switch to main. If you need branch-specific context, use tags to categorize memories by branch.
+
+### How do I prevent certain types of context from being saved?
+
+Adjust the quality gate thresholds. To block low-value saves, increase `quality.minScore`. To prevent very short or very long entries, adjust `quality.minLength` and `quality.maxLength`. You can also delete unwanted memories manually with `cortex delete <id>`.
+
+### What happens if I uninstall?
+
+Run `cortex uninstall`. It removes the database, stops the daemon, deletes the config directory, and unregisters the MCP server from Claude Code. Before deletion, it offers to export all your memories to a JSON file. Nothing is left behind.

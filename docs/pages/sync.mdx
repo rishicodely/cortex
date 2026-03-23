@@ -1,0 +1,134 @@
+# Multi-Machine Sync
+
+Cortex can sync memories across multiple machines using Turso, a distributed SQLite platform. You create the database, you own the credentials, and data is encrypted in transit. Cortex never sees your data.
+
+Sync is optional. Cortex works perfectly as a single-machine tool.
+
+## Setup
+
+### 1. Create a Turso account
+
+Go to [turso.tech](https://turso.tech) and create a free account. The free tier includes 9 GB of storage and 500 databases — more than enough for Cortex.
+
+### 2. Create a database
+
+```bash
+# Install the Turso CLI
+brew install tursodatabase/tap/turso
+
+# Log in
+turso auth login
+
+# Create a database for Cortex
+turso db create cortex-memories
+
+# Get the database URL
+turso db show cortex-memories --url
+# Output: libsql://cortex-memories-yourusername.turso.io
+
+# Create an auth token
+turso db tokens create cortex-memories
+# Output: eyJhbG... (save this token)
+```
+
+### 3. Configure Cortex
+
+```bash
+cortex sync setup
+```
+
+This runs an interactive wizard that prompts for:
+1. Turso database URL
+2. Auth token (stored encrypted with AES-256-GCM)
+3. Sync interval (default: 5 minutes)
+
+Or configure manually:
+
+```bash
+cortex config set sync.enabled true
+cortex config set sync.url "libsql://cortex-memories-yourusername.turso.io"
+cortex config set sync.token "eyJhbG..."
+cortex restart
+```
+
+### 4. Repeat on each machine
+
+Install Cortex on your other machines and run the same `cortex sync setup` with the same Turso credentials. Memories will sync automatically.
+
+## How Sync Works
+
+Sync uses Turso's embedded replicas feature:
+
+1. Each machine maintains a full local SQLite copy (the embedded replica)
+2. Writes go to the local database first (so Cortex works offline)
+3. Every sync interval (default: 5 minutes), local changes push to Turso
+4. Remote changes pull from Turso to local
+
+This means Cortex always works at local SQLite speed, even when sync is enabled. Network latency only affects the sync operation, not your Claude Code sessions.
+
+## Conflict Resolution
+
+When the same memory is modified on two machines before a sync:
+
+- **Last-write-wins** for content updates (the most recent `updated_at` timestamp wins)
+- **No conflict** for new memories (both are kept)
+- **Deletion propagates** — if a memory is deleted on one machine, it is deleted on all machines after sync
+
+This policy works for individual developer workflows where edits rarely conflict. Team sync (coming soon) will use a different conflict resolution strategy.
+
+## Offline Behavior
+
+When your machine is offline:
+
+- Cortex continues working normally with the local SQLite database
+- New memories are saved locally
+- Sync is paused automatically
+- When the connection is restored, pending changes push to Turso
+
+No data is lost during offline periods. The sync queue persists across daemon restarts.
+
+## Revoking Machine Access
+
+To remove a machine from the sync group:
+
+```bash
+# On the machine you want to remove
+cortex config set sync.enabled false
+cortex restart
+```
+
+To revoke a machine you no longer have access to, rotate the Turso auth token:
+
+```bash
+# From any machine with turso CLI access
+turso db tokens create cortex-memories
+# Use the new token on all remaining machines
+cortex config set sync.token "new-token-here"
+cortex restart
+```
+
+The old token becomes invalid immediately. The revoked machine can no longer push or pull.
+
+## Checking Sync Status
+
+```bash
+cortex sync status
+```
+
+```
+Sync: enabled
+URL:  libsql://cortex-memories-kd.turso.io
+Last push: 2 minutes ago (247 memories)
+Last pull: 2 minutes ago (no changes)
+Pending:   0 changes
+Machines:  2 (MacBook Pro, MacBook Air)
+```
+
+## Disable Sync
+
+```bash
+cortex config set sync.enabled false
+cortex restart
+```
+
+Your local database remains intact. Sync can be re-enabled at any time without data loss.

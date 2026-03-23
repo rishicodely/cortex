@@ -1,0 +1,112 @@
+# How It Works
+
+Cortex operates in five phases during a Claude Code session. Each phase is automatic — you do not need to do anything after the initial setup.
+
+## Architecture
+
+```
+┌──────────────┐     MCP Protocol     ┌───────────────┐
+│  Claude Code  │◄───────────────────►│  Cortex MCP   │
+│  (your IDE)   │   read/write tools  │    Server      │
+└──────────────┘                      └───────┬───────┘
+                                              │
+                                      ┌───────▼───────┐
+                                      │  Quality Gate  │
+                                      │  (7 rules)     │
+                                      └───────┬───────┘
+                                              │
+                                      ┌───────▼───────┐
+                                      │    SQLite      │
+                                      │  (local disk)  │
+                                      └───────┬───────┘
+                                              │ optional
+                                      ┌───────▼───────┐
+                                      │  Turso Sync    │
+                                      │ (multi-machine)│
+                                      └───────────────┘
+```
+
+## The Five Phases
+
+### Phase 1: Session Start — Memory Injection
+
+When Claude Code opens a session, it discovers Cortex through the MCP server registration. Claude calls the `cortex_get_context` tool, and Cortex returns the relevant memories for the current project.
+
+The response includes all active memories sorted by importance, filtered to the detected project. Claude receives structured context — decisions, preferences, open threads — before you type a single word.
+
+### Phase 2: During Session — Tool Call Interception
+
+As you work with Claude Code, Claude can save new memories by calling the `cortex_save_memory` tool. This happens naturally during conversation when Claude makes a decision, discovers a pattern, or learns a preference.
+
+The five MCP tools available to Claude:
+
+| Tool | Purpose |
+|------|---------|
+| `cortex_get_context` | Read memories for the current project |
+| `cortex_save_memory` | Save a new memory with type, content, importance |
+| `cortex_search` | Search across all projects by keyword |
+| `cortex_list_projects` | List all projects with memory counts |
+| `cortex_get_status` | Check daemon health and memory stats |
+
+### Phase 3: Quality Gate
+
+Every memory passes through 7 validation rules before being stored. This is the critical layer that prevents the database from filling with noise.
+
+| Rule | What it checks | Why |
+|------|----------------|-----|
+| Content length | 50–2000 characters | Too short = vague, too long = unfocused |
+| Reason field | Required, minimum 10 characters | Forces Claude to explain why this matters |
+| Duplicate check | TF-IDF cosine similarity < 85% | Prevents storing the same idea twice |
+| Banned phrases | Rejects meta-commentary ("I will now...") | Filters out process narration, not knowledge |
+| Sensitive data | Blocks API keys, passwords, tokens, private keys | Security — credentials should never be stored |
+| Quality score | Minimum score of 3 (specificity + technical terms) | Rejects generic content that adds no value |
+| Rate limit | 50 per session, 200 per day | Prevents runaway save loops |
+
+A memory that fails any rule is rejected with a specific error message explaining why.
+
+### Phase 4: Session End — Summarizer
+
+After your Claude Code session ends, the summarizer runs. It reviews the full session transcript and identifies important context that Claude did not explicitly save — decisions implied by code changes, preferences demonstrated by style choices, open threads mentioned but not captured.
+
+The summarizer generates candidate memories and passes them through the same quality gate. This catches the 20-30% of useful context that gets missed during active coding.
+
+### Phase 5: Sync (Optional)
+
+If multi-machine sync is enabled, new memories are pushed to your Turso database after the quality gate and summarizer complete. Sync runs asynchronously and does not block your session.
+
+See the [Sync guide](/sync) for setup details.
+
+## What the Daemon Does
+
+The Cortex daemon (`cortexd`) is a background process that:
+
+- Hosts the MCP server on `localhost:7434`
+- Serves the web dashboard on `localhost:7433`
+- Manages the SQLite database connection
+- Runs the quality gate validation
+- Executes the session summarizer
+- Handles sync operations (if enabled)
+
+The daemon starts automatically after installation and restarts on system boot. It uses approximately 30 MB of memory and negligible CPU when idle.
+
+## What SQLite Stores
+
+Each memory record contains:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | UUID | Unique identifier |
+| `project` | string | Project name (detected or manual) |
+| `type` | enum | decision, context, preference, thread, error, learning |
+| `content` | text | The memory content (50–2000 chars) |
+| `reason` | text | Why this memory was saved |
+| `importance` | integer | 1–10 scale |
+| `tags` | text[] | Optional categorization tags |
+| `expires_at` | datetime | Optional expiration (threads, errors) |
+| `created_at` | datetime | When the memory was saved |
+| `updated_at` | datetime | Last modification time |
+| `source` | enum | claude (auto-saved), summarizer, manual (CLI/dashboard) |
+
+The database also stores project metadata, session logs, sync state, and configuration overrides.
+
+All data lives at `~/.cortex/cortex.db`. Full-text search is powered by SQLite FTS5.

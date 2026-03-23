@@ -1,0 +1,409 @@
+# CLI Reference
+
+All commands are available after installing the `@cortex.memory/cli` package. Run `cortex help` for a summary or `cortex help <command>` for detailed usage.
+
+## Init & Setup
+
+### `cortex init`
+
+Initialize Cortex in the current project directory.
+
+```bash
+cortex init [--name <project-name>] [--force] [--dev]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--name` | auto-detected | Override the project name |
+| `--force` | `false` | Re-initialize even if already configured |
+| `--dev` | `false` | Use local dev MCP server instead of installed |
+
+```bash
+$ cortex init
+Detected project: my-saas-app (from git remote)
+Project registered. 0 memories.
+MCP server verified. Claude Code will load context on next session.
+```
+
+### `cortex status`
+
+Show daemon status, memory counts, and sync state.
+
+```bash
+cortex status [--json]
+```
+
+```bash
+$ cortex status
+Daemon:     running (PID 12847, uptime 3h 22m)
+MCP Server: localhost:7434 (5 tools)
+Dashboard:  localhost:7433
+Database:   ~/.cortex/cortex.db (4.2 MB)
+Sync:       disabled
+
+Projects:
+  my-saas-app       89 memories (active)
+  cortex            34 memories
+  the-prod-line     28 memories
+  Total:           151 memories across 3 projects
+```
+
+### `cortex doctor`
+
+Run diagnostic checks and fix common issues.
+
+```bash
+cortex doctor [--fix] [--verbose]
+```
+
+| Flag | Description |
+|------|-------------|
+| `--fix` | Attempt to auto-fix issues found |
+| `--verbose` | Show detailed check output |
+
+### `cortex start`
+
+Start the Cortex daemon.
+
+```bash
+cortex start [--verbose] [--port <number>]
+```
+
+### `cortex stop`
+
+Stop the running daemon.
+
+```bash
+cortex stop [--force]
+```
+
+### `cortex restart`
+
+Stop and restart the daemon.
+
+```bash
+cortex restart
+```
+
+### `cortex logs`
+
+View daemon logs.
+
+```bash
+cortex logs [--lines <number>] [--follow]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--lines` | `50` | Number of log lines to show |
+| `--follow` | `false` | Stream logs in real time (like `tail -f`) |
+
+## Memory Operations
+
+### `cortex show`
+
+Browse memories for a project.
+
+```bash
+cortex show [project] [--type <type>] [--limit <n>] [--sort <field>]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--type` | all | Filter by memory type (decision, context, preference, thread, error, learning) |
+| `--limit` | `20` | Maximum memories to display |
+| `--sort` | `importance` | Sort by: importance, created, updated |
+
+```bash
+$ cortex show my-saas-app --type decision --limit 5
+# Decision memories for my-saas-app (showing 5 of 23)
+
+[1] importance:9  2025-03-18
+    Using Drizzle ORM instead of Prisma — better edge runtime support
+    Tags: database, orm
+
+[2] importance:8  2025-03-17
+    Server components by default, use client only for state/effects
+    Tags: react, architecture
+...
+```
+
+### `cortex search`
+
+Full-text search across all projects.
+
+```bash
+cortex search <query> [--project <name>] [--type <type>] [--limit <n>]
+```
+
+```bash
+$ cortex search "drizzle"
+Found 3 matches across 2 projects:
+
+[my-saas-app] decision (importance:9)
+  Using Drizzle ORM instead of Prisma — better edge runtime support
+
+[my-saas-app] learning (importance:6)
+  Drizzle generate command needs explicit schema path in monorepos
+
+[cortex] context (importance:5)
+  Evaluated Drizzle vs better-sqlite3 — chose better-sqlite3 for zero-dep local storage
+```
+
+### `cortex add`
+
+Manually add a memory.
+
+```bash
+cortex add [--project <name>] [--type <type>] [--importance <1-10>]
+```
+
+Opens an interactive prompt for content and reason if not provided as flags.
+
+### `cortex edit`
+
+Edit an existing memory.
+
+```bash
+cortex edit <id>
+```
+
+Opens the memory content in your `$EDITOR`.
+
+### `cortex delete`
+
+Delete a specific memory.
+
+```bash
+cortex delete <id> [--force]
+```
+
+### `cortex clear`
+
+Delete all memories for a project or globally.
+
+```bash
+cortex clear [project] [--force] [--no-backup]
+```
+
+Without `--force`, prompts for confirmation and creates a backup first.
+
+### `cortex count`
+
+Quick memory count without the full status output.
+
+```bash
+cortex count [project]
+```
+
+```bash
+$ cortex count
+151 memories across 3 projects
+```
+
+### `cortex history`
+
+Show memory creation history by date.
+
+```bash
+cortex history [--days <n>] [--project <name>]
+```
+
+### `cortex tag`
+
+Add tags to a memory.
+
+```bash
+cortex tag <id> <tag1> [tag2] [tag3]
+```
+
+### `cortex untag`
+
+Remove a tag from a memory.
+
+```bash
+cortex untag <id> <tag>
+```
+
+### `cortex pin`
+
+Pin a memory so it always appears in context injection regardless of importance score.
+
+```bash
+cortex pin <id>
+```
+
+### `cortex unpin`
+
+Unpin a memory.
+
+```bash
+cortex unpin <id>
+```
+
+### `cortex archive`
+
+Archive a memory. Archived memories are excluded from context injection but kept in the database.
+
+```bash
+cortex archive <id>
+```
+
+### `cortex stats`
+
+Show memory statistics for a project.
+
+```bash
+cortex stats [project]
+```
+
+```bash
+$ cortex stats my-saas-app
+my-saas-app — 89 memories
+
+By type:
+  Decision:    23 (26%)
+  Context:     21 (24%)
+  Preference:  18 (20%)
+  Thread:      12 (13%)
+  Error:        9 (10%)
+  Learning:     6 (7%)
+
+By source:
+  Claude:      52 (58%)
+  Summarizer:  28 (31%)
+  Manual:       9 (10%)
+
+Average importance: 6.8
+Database size: 1.2 MB
+Oldest memory: 2025-02-14
+Newest memory: 2025-03-20
+```
+
+## Data Management
+
+### `cortex export`
+
+Export memories as JSON.
+
+```bash
+cortex export [project] [--output <file>] [--format json|csv]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--output` | stdout | Output file path |
+| `--format` | `json` | Export format |
+
+### `cortex import`
+
+Import memories from a JSON file.
+
+```bash
+cortex import <file> [--project <name>] [--skip-quality-gate]
+```
+
+### `cortex backup`
+
+Create a timestamped copy of the database.
+
+```bash
+cortex backup [--output <path>]
+```
+
+```bash
+$ cortex backup
+Backup created: ~/.cortex/backups/cortex-2025-03-20-143022.db
+```
+
+## Sync
+
+### `cortex sync status`
+
+Show sync configuration and state.
+
+```bash
+cortex sync status
+```
+
+### `cortex sync push`
+
+Push local changes to Turso.
+
+```bash
+cortex sync push [--force]
+```
+
+### `cortex sync pull`
+
+Pull remote changes to local.
+
+```bash
+cortex sync pull [--force]
+```
+
+### `cortex sync setup`
+
+Interactive Turso sync configuration.
+
+```bash
+cortex sync setup
+```
+
+## Configuration
+
+### `cortex config show`
+
+Display all configuration values.
+
+```bash
+cortex config show [--json]
+```
+
+### `cortex config set`
+
+Update a configuration value.
+
+```bash
+cortex config set <key> <value>
+```
+
+### `cortex config reset`
+
+Reset configuration to defaults.
+
+```bash
+cortex config reset [--force]
+```
+
+## Admin
+
+### `cortex uninstall`
+
+Remove Cortex completely.
+
+```bash
+cortex uninstall [--keep-data] [--force]
+```
+
+| Flag | Description |
+|------|-------------|
+| `--keep-data` | Remove daemon and MCP registration but keep the database |
+| `--force` | Skip confirmation prompt |
+
+### `cortex --version`
+
+Print the installed version.
+
+```bash
+$ cortex --version
+cortex v1.0.0
+```
+
+### `cortex help`
+
+Show help for any command.
+
+```bash
+cortex help [command]
+```

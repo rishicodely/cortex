@@ -1,0 +1,57 @@
+# Cortex Documentation
+
+Cortex is a persistent memory layer for Claude Code. It runs as a local MCP server, captures decisions, context, and preferences during your coding sessions, and injects them back into every future session automatically.
+
+## Quick Navigation
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+  <a href="/install" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>Install</strong>
+    <p className="text-sm text-gray-500 mt-1">Homebrew, npx, or curl. Under 30 seconds.</p>
+  </a>
+  <a href="/how-it-works" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>How It Works</strong>
+    <p className="text-sm text-gray-500 mt-1">Architecture, MCP protocol, quality gate.</p>
+  </a>
+  <a href="/cli" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>CLI Reference</strong>
+    <p className="text-sm text-gray-500 mt-1">All 33 commands with examples.</p>
+  </a>
+  <a href="/configuration" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>Configuration</strong>
+    <p className="text-sm text-gray-500 mt-1">Every config key, its type, and default.</p>
+  </a>
+  <a href="/sync" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>Multi-Machine Sync</strong>
+    <p className="text-sm text-gray-500 mt-1">Turso setup, conflict resolution, offline.</p>
+  </a>
+  <a href="/faq" className="block p-4 border rounded-lg hover:border-purple-500 transition-colors">
+    <strong>FAQ</strong>
+    <p className="text-sm text-gray-500 mt-1">15 questions from real users.</p>
+  </a>
+</div>
+
+## 30-Second Install
+
+```bash
+npx @cortex.memory/cli init
+```
+
+That's it. Cortex registers itself as an MCP server with Claude Code, creates a local SQLite database, and starts the daemon. Your next Claude Code session will have persistent memory.
+
+Verify the install:
+
+```bash
+cortex doctor
+```
+
+Expected output:
+
+```
+✓ Daemon running (PID 12847)
+✓ MCP server registered with Claude Code
+✓ Database exists (~/.cortex/cortex.db)
+✓ Port 7434 available
+✓ Dashboard available at http://localhost:7433
+All checks passed. Cortex is healthy.
+```

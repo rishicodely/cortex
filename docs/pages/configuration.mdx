@@ -1,0 +1,123 @@
+# Configuration
+
+Cortex works out of the box with zero configuration. All settings have sensible defaults. Customize via `cortex config set <key> <value>` or edit `~/.cortex/config.json` directly.
+
+## Config File Location
+
+- **Global config:** `~/.cortex/config.json`
+- **Project override:** `.cortex/config.json` in your project root (takes precedence)
+
+## Full Config Reference
+
+```json
+{
+  // MCP Server
+  "port": 7434,                          // MCP server port (number, default: 7434)
+  "host": "127.0.0.1",                   // Bind address (string, default: "127.0.0.1")
+
+  // Dashboard
+  "dashboard.port": 7433,                // Web dashboard port (number, default: 7433)
+  "dashboard.enabled": true,             // Enable web dashboard (boolean, default: true)
+
+  // Quality Gate
+  "quality.minLength": 50,               // Minimum memory content length (number, default: 50)
+  "quality.maxLength": 2000,             // Maximum memory content length (number, default: 2000)
+  "quality.minReasonLength": 10,         // Minimum reason field length (number, default: 10)
+  "quality.similarityThreshold": 0.85,   // Duplicate detection threshold (number 0-1, default: 0.85)
+  "quality.minScore": 3,                 // Minimum quality score (number 1-10, default: 3)
+  "quality.rateLimit.perSession": 50,    // Max saves per session (number, default: 50)
+  "quality.rateLimit.perDay": 200,       // Max saves per day (number, default: 200)
+
+  // Sync (Turso)
+  "sync.enabled": false,                 // Enable multi-machine sync (boolean, default: false)
+  "sync.url": "",                        // Turso database URL (string)
+  "sync.token": "",                      // Turso auth token (string, stored encrypted)
+  "sync.interval": 300,                  // Sync interval in seconds (number, default: 300)
+
+  // Summarizer
+  "summarizer.enabled": true,            // Run session summarizer (boolean, default: true)
+  "summarizer.model": "claude-sonnet-4-20250514",  // Model for summarization (string)
+
+  // Daemon
+  "daemon.autoStart": true,              // Start daemon on system boot (boolean, default: true)
+  "daemon.logLevel": "info",             // Log level: debug, info, warn, error (string, default: "info")
+  "daemon.maxLogSize": "10MB",           // Max log file size before rotation (string, default: "10MB")
+
+  // Database
+  "db.path": "~/.cortex/cortex.db",      // SQLite database path (string)
+  "db.walMode": true,                    // Enable WAL mode for concurrent reads (boolean, default: true)
+
+  // Context Injection
+  "context.maxMemories": 50,             // Max memories injected per session (number, default: 50)
+  "context.minImportance": 3,            // Minimum importance for injection (number 1-10, default: 3)
+  "context.includeArchived": false       // Include archived memories (boolean, default: false)
+}
+```
+
+## Common Configuration Patterns
+
+### Change the MCP server port
+
+```bash
+cortex config set port 7435
+cortex restart
+```
+
+### Enable sync
+
+```bash
+cortex config set sync.enabled true
+cortex config set sync.url "libsql://your-db-name.turso.io"
+cortex config set sync.token "your-turso-auth-token"
+cortex restart
+```
+
+### Relax the quality gate for personal projects
+
+```bash
+cortex config set quality.minLength 20
+cortex config set quality.minScore 2
+cortex config set quality.rateLimit.perSession 100
+```
+
+### Tighten the quality gate for shared team projects
+
+```bash
+cortex config set quality.minLength 100
+cortex config set quality.minScore 5
+cortex config set quality.similarityThreshold 0.75
+```
+
+### Disable the summarizer
+
+```bash
+cortex config set summarizer.enabled false
+```
+
+### Increase context injection limit
+
+```bash
+cortex config set context.maxMemories 100
+cortex config set context.minImportance 1
+```
+
+## Project-Level Overrides
+
+Create a `.cortex/config.json` in your project root to override global settings for that specific project. Only include the keys you want to change:
+
+```json
+{
+  "quality.minScore": 5,
+  "context.maxMemories": 30
+}
+```
+
+Project configs are merged on top of the global config. They do not need to contain every key.
+
+## Reset to Defaults
+
+```bash
+cortex config reset
+```
+
+This reverts all settings to their default values. Add `--force` to skip the confirmation prompt.
