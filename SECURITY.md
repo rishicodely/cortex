@@ -2,37 +2,58 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Cortex, please report it responsibly.
+If you discover a security vulnerability in Cortex, please report it privately. Do not open a public GitHub issue.
 
 **Email:** security@theproductionline.com
 
-**SLA:**
-- Acknowledgement within 48 hours
-- Patch within 7 days for critical issues
-- GitHub Security Advisory for public disclosure
+Include:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if you have one)
 
-**Do NOT:**
-- Open a public GitHub issue for security vulnerabilities
-- Share vulnerability details publicly before a fix is released
+## Response SLA
 
-## Security Architecture
+- **Acknowledgment:** Within 48 hours of your report
+- **Initial assessment:** Within 5 business days
+- **Critical vulnerabilities:** Patch within 7 days of confirmation
+- **High vulnerabilities:** Patch within 14 days
+- **Medium/Low:** Addressed in the next scheduled release
 
-- All data stored locally by default (SQLite at `~/.cortex/memory.db`)
-- File permissions set to `600` (owner read/write only)
-- Session transcripts encrypted with AES-256-GCM
-- Encryption key derived via HKDF-SHA256 from machine UUID
-- MCP server listens on `localhost:7434` only — not exposed to network
-- Quality gate blocks API keys, tokens, passwords, and credentials from being stored
-- PIN auth (bcrypt, cost factor 12) available for shared machines
-- Zero telemetry without explicit opt-in
-- Clean uninstall leaves zero footprint
+## Scope
 
-## Supported Versions
+The following are in scope for security reports:
 
-| Version | Supported |
-|---------|-----------|
-| 1.x     | Yes       |
+- **MCP server** (`packages/server`) — the localhost API and MCP tool handlers
+- **Daemon process** — the background service that runs on your machine
+- **Sync layer** — Turso sync, credential storage, data in transit
+- **Quality gate** — sensitive data filtering (API keys, passwords, tokens)
+- **CLI** (`packages/cli`) — command injection, privilege escalation
+- **Dashboard** (`packages/dashboard`) — XSS, CSRF, authentication bypass
+- **Electron app** (`packages/electron`) — remote code execution, sandbox escape
 
-## Hall of Fame
+## Out of Scope
 
-Contributors who responsibly disclose vulnerabilities will be recognized here.
+- Vulnerabilities in third-party dependencies we do not control (report these upstream; we will update when patches are available)
+- Issues that require physical access to the machine where Cortex is running
+- Social engineering attacks
+- Denial of service against the localhost-only server
+
+## Architecture Security Notes
+
+Cortex is designed with a local-first security model:
+
+- **All data stored locally** in SQLite at `~/.cortex/cortex.db`
+- **MCP server binds to localhost only** — no external network access
+- **Credentials encrypted** with AES-256-GCM before storage
+- **Quality gate blocks sensitive data** — API keys, passwords, tokens, and private keys are rejected before they reach the database
+- **Zero telemetry by default** — no analytics, no crash reporting, no phone-home
+- **Optional sync uses Turso** — you create the database, you own the credentials, data is encrypted in transit via TLS
+
+## Researcher Recognition
+
+We credit security researchers in the CHANGELOG and release notes for responsibly disclosed vulnerabilities. We will never pursue legal action against researchers acting in good faith.
+
+## PGP Key
+
+For encrypted reports, contact security@theproductionline.com and we will provide a public key.

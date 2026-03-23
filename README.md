@@ -1,404 +1,255 @@
 # C●rtex
 
-### Persistent Memory for Claude Code
+**Persistent memory for Claude Code. Install once, never re-explain your project again.**
 
-**Every time you open Claude Code, it forgets everything. Cortex fixes that.**
+Claude Code forgets everything between sessions. Your architecture, your preferences, every decision you made yesterday — gone. Cortex is a local MCP server that captures context during your sessions and feeds it back automatically. Your AI starts every conversation knowing exactly where you left off.
+
+<!-- DEMO GIF: record with vhs or asciinema, replace this line -->
 
 <p align="center">
-  <a href="https://www.theproductionline.ai/tools/cortex"><strong>🌐 Product Page & Docs</strong></a> &nbsp;·&nbsp;
-  <a href="https://www.theproductionline.ai/tools/cortex"><strong>📥 Get Cortex (Free)</strong></a> &nbsp;·&nbsp;
-  <a href="https://www.npmjs.com/package/@cortex.memory/cli"><strong>📦 npm</strong></a>
+  <a href="https://www.theproductionline.ai/tools/cortex"><strong>Product Page</strong></a> &nbsp;·&nbsp;
+  <a href="https://www.npmjs.com/package/@cortex.memory/cli"><strong>npm</strong></a> &nbsp;·&nbsp;
+  <a href="https://github.com/ProductionLineHQ/cortex/issues"><strong>Issues</strong></a> &nbsp;·&nbsp;
+  <a href="https://www.theproductionline.ai/tools/cortex"><strong>Docs</strong></a>
 </p>
 
-[![npm version](https://img.shields.io/npm/v/@cortex.memory/cli?color=cb3837&label=npm)](https://www.npmjs.com/package/@cortex.memory/cli)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/ProductionLineHQ/cortex?style=social)](https://github.com/ProductionLineHQ/cortex)
-[![CI](https://img.shields.io/github/actions/workflow/status/ProductionLineHQ/cortex/ci.yml?label=CI)](https://github.com/ProductionLineHQ/cortex/actions)
-[![Website](https://img.shields.io/badge/Website-theproductionline.ai-7C6FE0)](https://www.theproductionline.ai/tools/cortex)
-
 <p align="center">
-  <img src="assets/cortex-hero.png" alt="Cortex — Claude Code finally remembers" width="100%">
+  <a href="https://github.com/ProductionLineHQ/cortex/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ProductionLineHQ/cortex/ci.yml?label=CI&logo=github" alt="CI"></a>
+  <a href="https://www.npmjs.com/package/@cortex.memory/cli"><img src="https://img.shields.io/npm/v/@cortex.memory/cli?color=cb3837&label=npm&logo=npm" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://github.com/ProductionLineHQ/cortex/stargazers"><img src="https://img.shields.io/github/stars/ProductionLineHQ/cortex?style=social" alt="GitHub Stars"></a>
+  <a href="https://www.theproductionline.ai/tools/cortex"><img src="https://img.shields.io/badge/Website-theproductionline.ai-7C6FE0" alt="Website"></a>
 </p>
 
 ---
 
-<p align="center">
-  <img src="assets/cortex-dashboard.png" alt="Cortex Dashboard — Memory management for all your projects" width="100%">
-</p>
-
-<p align="center">
-  <em>Dashboard: 247 memories across 6 projects, synced across 2 machines</em>
-</p>
+If Cortex is useful to you, a star helps other engineers find it.
 
 ---
 
 ## The Problem
 
-Claude Code has amnesia. Every session starts from zero. You explain your architecture, your preferences, your conventions -- and tomorrow it asks again. You lose context, repeat yourself, and waste time re-establishing what the AI should already know.
+Claude Code has amnesia. Every session starts from zero. You explain your architecture, your naming conventions, the tech stack, why you chose Turso over PlanetScale — and tomorrow it asks the same questions again.
 
-## The Solution
+For most engineers, this means 15 to 30 minutes of wasted context-setting every morning. You are paying for a genius contractor who forgets everything overnight. Claude Code memory does not persist. Session memory disappears the moment you close the terminal.
 
-Cortex is a persistent memory layer that runs as a local daemon alongside Claude Code. It captures decisions, preferences, open threads, and project context as structured memories -- then silently injects them into every new session via MCP. Your AI starts every conversation fully informed.
+Cortex gives Claude Code persistent context. It runs silently in the background, captures the decisions and preferences that matter, and injects them back at the start of every future session. No manual note-taking, no pasting old conversations, no context files you have to maintain.
 
-## Features
+## Install
 
-- **Persistent Memory** -- decisions, preferences, open threads, and learnings survive across sessions
-- **Multi-Machine Sync** -- Turso-powered cloud sync, your database, your control
-- **Quality Gate** -- 6-rule engine ensures only high-quality, non-duplicate memories are saved
-- **Dashboard** -- Next.js web UI at `localhost:7434`
-- **Desktop App** -- Native SwiftUI Mac app + Electron for Windows/Linux
-- **VS Code Extension** -- Save memories from your editor, hover to peek
-- **Session Summarizer** -- AI reviews your sessions, extracts memories you missed
-- **Local-First** -- SQLite on your machine, nothing leaves unless you enable sync
-- **One Command Install** -- brew, npx, or curl
+Three ways. Pick one.
 
-## Quick Start
-
+**Homebrew (macOS)**
 ```bash
-# Install via npx
+brew tap ProductionLineHQ/cortex
+brew install cortex-memory
+```
+
+**npx (any platform)**
+```bash
 npx @cortex.memory/cli init
-
-# Or install globally
-npm install -g @cortex.memory/cli
-cortex init
 ```
 
-That's it. Open Claude Code in any project. Cortex starts learning.
-
-### Verify Installation
-
+**curl**
 ```bash
-cortex doctor
+curl -fsSL https://raw.githubusercontent.com/ProductionLineHQ/cortex/main/scripts/install.sh | sh
 ```
 
-```
-Cortex Doctor — Running diagnostics...
-
- ✓ Daemon running
- ✓ SQLite accessible
- ✓ Schema version: v4
- ✓ 47 memories in database
- ✓ DB size: 0.3 MB
- ✓ Claude Code settings: MCP server registered
- ✓ Node.js: v22.12.0
- ✓ Data directory: /Users/you/.cortex
-
-8 passed, 0 failed
- ✓ All checks passed!
-```
+After install, run `cortex init` in any project directory. Cortex registers itself as an MCP server with Claude Code automatically.
 
 ## How It Works
 
-### 1. Install -- one command
-
-Cortex creates `~/.cortex/`, initializes an SQLite database, and registers itself as an MCP server in Claude Code's settings.
-
-### 2. Cortex learns -- silently captures context
-
-During your Claude Code sessions, Cortex provides 7 MCP tools. When Claude identifies something worth remembering -- a decision, a preference, an error pattern -- it calls `save_memory`:
+Cortex runs as a local daemon on your machine. It connects to Claude Code through the Model Context Protocol, the same interface Claude Code uses for all its tool integrations.
 
 ```
-save_memory({
-  content: "Using Fastify instead of Express for the API layer.
-             Rationale: 2x throughput in benchmarks, built-in
-             schema validation via Zod, and first-class TypeScript.",
-  type: "decision",
-  reason: "Architectural decision that affects all future API work",
-  importance: 8,
-  tags: ["api", "fastify", "architecture"]
-})
+┌──────────────┐     MCP Protocol     ┌───────────────┐
+│  Claude Code  │◄───────────────────►│  Cortex MCP   │
+│  (your IDE)   │   read/write tools  │    Server      │
+└──────────────┘                      └───────┬───────┘
+                                              │
+                                      ┌───────▼───────┐
+                                      │  Quality Gate  │
+                                      │  (7 rules)     │
+                                      └───────┬───────┘
+                                              │
+                                      ┌───────▼───────┐
+                                      │    SQLite      │
+                                      │  (local disk)  │
+                                      └───────┬───────┘
+                                              │ optional
+                                      ┌───────▼───────┐
+                                      │  Turso Sync    │
+                                      │ (multi-machine)│
+                                      └───────────────┘
 ```
 
-Every memory passes through a **quality gate** before being stored -- ensuring no duplicates, no sensitive data, no generic fluff.
-
-### 3. Next session -- Claude starts fully informed
-
-When you open Claude Code again, it calls `get_memories` and receives a structured context block:
-
-```
-=== CORTEX MEMORY: my-project ===
-
-## DECISIONS
-- [importance: 8] Using Fastify instead of Express for the API layer...
-- [importance: 7] PostgreSQL with Drizzle ORM, not Prisma...
-
-## PREFERENCES
-- [importance: 9] Always use pnpm, never npm or yarn...
-- [importance: 6] Prefer named exports over default exports...
-
-## OPEN THREADS
-- [importance: 7] Authentication flow not yet implemented...
-
-## RECENT CHANGES
-- [2 days ago] Migrated from REST to tRPC for internal APIs...
-
-=== END CORTEX MEMORY ===
-```
-
-### 4. Sync -- memories follow you across machines
-
-Enable optional Turso cloud sync and your memories follow you everywhere. Every 30 seconds, Cortex pushes local changes and pulls remote ones. Last-write-wins conflict resolution keeps things simple.
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────┐
-│                  Claude Code                      │
-│              (via MCP Protocol)                   │
-└──────────────────┬───────────────────────────────┘
-                   │ stdio
-┌──────────────────▼───────────────────────────────┐
-│                Cortex Daemon                      │
-│                                                   │
-│  ┌────────────┐ ┌────────────┐ ┌──────────────┐  │
-│  │ MCP Server │ │  REST API  │ │  SSE Events  │  │
-│  │  (stdio)   │ │ (port 7434)│ │ /api/events  │  │
-│  └─────┬──────┘ └─────┬──────┘ └──────┬───────┘  │
-│        │              │               │           │
-│  ┌─────▼──────────────▼───────────────▼───────┐  │
-│  │              Quality Gate                   │  │
-│  │  length · banned · sensitive · quality ·    │  │
-│  │         duplicate · rate-limit              │  │
-│  └────────────────────┬───────────────────────┘  │
-│                       │                           │
-│  ┌────────────────────▼───────────────────────┐  │
-│  │           SQLite (local-first)              │  │
-│  │        ~/.cortex/memory.db                  │  │
-│  │  FTS5 full-text search · 4 migrations       │  │
-│  └────────────────────┬───────────────────────┘  │
-│                       │ (optional)                │
-│  ┌────────────────────▼───────────────────────┐  │
-│  │          Turso Cloud Sync                   │  │
-│  │    push/pull every 30s · batch 100          │  │
-│  │    last-write-wins · conflict log           │  │
-│  │    your database, your control              │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
-
-## Memory Types
-
-Cortex stores 6 structured types of memory:
-
-| Type | Description | Example |
-|------|-------------|---------|
-| `decision` | Architectural and technology choices | "Using Fastify instead of Express" |
-| `context` | Project state and environment facts | "Monorepo with 6 packages using pnpm" |
-| `preference` | Working style and convention preferences | "Always use named exports" |
-| `thread` | Open problems and unfinished work | "Auth flow not yet implemented" |
-| `error` | Bugs, gotchas, and failure patterns | "SQLite WAL mode required for concurrency" |
-| `learning` | Facts and knowledge discovered during work | "Turso supports embedded replicas" |
-
-## CLI Reference
-
-### Core Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex init` | Initialize Cortex -- create DB, start daemon, wire Claude Code |
-| `cortex status` | Show daemon status, DB size, memory count |
-| `cortex doctor` | Run 8 diagnostic checks, auto-fix with `--fix` |
-| `cortex dashboard` | Open the web dashboard in your browser |
-| `cortex version` | Show CLI and daemon version |
-
-### Memory Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex show [project]` | Display memories for current or specified project |
-| `cortex search <query>` | Full-text search across all memories |
-| `cortex add <text>` | Manually add a memory |
-| `cortex edit <id>` | Edit memory metadata (importance, tags, etc.) |
-| `cortex delete <id>` | Soft-delete a memory |
-| `cortex supersede <id> <content>` | Replace a memory with updated content |
-| `cortex memory pin <id>` | Pin a memory (importance 10, never garbage-collected) |
-| `cortex memory unpin <id>` | Unpin a memory (reset to importance 5) |
-| `cortex timeline [project]` | Chronological memory history grouped by date |
-| `cortex link <id> --to <project>` | Link a memory to another project |
-| `cortex review` | Interactive review of stale memories |
-
-### Project Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex projects` | List all projects |
-| `cortex project list` | List all projects (alias) |
-| `cortex project switch <name>` | Set the active project |
-| `cortex project rename <id> <name>` | Rename a project |
-| `cortex project archive <id>` | Archive a project |
-
-### Sync Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex sync status` | Show sync state, queue size, connected machines |
-| `cortex sync setup` | Interactive Turso credential configuration |
-| `cortex sync now` | Force an immediate sync cycle |
-| `cortex sync pause` | Pause automatic sync |
-| `cortex sync resume` | Resume automatic sync |
-
-### Data Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex export` | Export all memories to JSON |
-| `cortex import <file>` | Import memories from a JSON file |
-| `cortex clear [project]` | Delete memories (creates backup first) |
-| `cortex analytics` | Usage stats: memory counts, creation rate, type distribution |
-
-### Config Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex config show` | Display current configuration |
-| `cortex config set <key> <value>` | Set a configuration value |
-| `cortex config reset` | Reset all configuration to defaults |
-
-### System Commands
-
-| Command | Description |
-|---------|-------------|
-| `cortex upgrade` | Check for and install updates |
-| `cortex uninstall` | Remove Cortex completely (with `--dry-run` preview) |
-| `cortex summarize` | Manually trigger the session summarizer |
-| `cortex subscribe <email>` | Verify newsletter subscription for sync access |
-| `cortex template list` | Browse starter memory templates |
-| `cortex template apply <name>` | Apply a template to the current project |
-
-> Every command supports `--json` for machine-readable output. See [docs/CLI.md](docs/CLI.md) for the full reference with all flags and examples.
-
-## Configuration
-
-Cortex stores its configuration in `~/.cortex/config.json`:
+When Claude Code starts a session, it calls the `cortex_get_context` MCP tool. Cortex returns the relevant memories for the current project:
 
 ```json
 {
-  "sync": {
-    "turso_url": "libsql://your-db.turso.io",
-    "turso_token_encrypted": "...",
-    "enabled": true
+  "tool": "cortex_get_context",
+  "result": {
+    "project": "my-saas-app",
+    "memories": [
+      {
+        "type": "decision",
+        "content": "Using Drizzle ORM instead of Prisma — better edge runtime support and no binary dependency",
+        "importance": 8,
+        "created": "2025-03-19T14:22:00Z"
+      },
+      {
+        "type": "preference",
+        "content": "Always use server components by default, only add use client when state or effects are needed",
+        "importance": 9,
+        "created": "2025-03-18T09:15:00Z"
+      },
+      {
+        "type": "thread",
+        "content": "Investigating WebSocket reconnection drops under high load — suspect Cloudflare timeout at 100s",
+        "importance": 7,
+        "created": "2025-03-20T16:40:00Z"
+      }
+    ]
   }
 }
 ```
 
-### Configurable Options
+During the session, Claude can save new memories through the `cortex_save_memory` tool. Every memory passes through a quality gate before being stored — this prevents the database from filling up with noise.
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `auto_summarize` | `true` | Auto-summarize sessions on end |
-| `quality_threshold` | `0.5` | Quality gate threshold |
-| `max_memories_per_session` | `50` | Per-session save limit |
-| `sync_enabled` | `false` | Enable Turso cloud sync |
-| `active_project` | `null` | Currently active project |
+At the end of each session, an AI summarizer reviews the conversation for any important context that Claude forgot to save, and captures those as additional memories.
 
-### Environment Variables
+## Features
 
-| Variable | Description |
-|----------|-------------|
-| `CORTEX_LOG_LEVEL` | Daemon log level (`info`, `debug`, `warn`, `error`) |
-| `CORTEX_WEB_URL` | Cortex web server URL for subscriber verification |
-
-## Security
-
-### Trust Model
-
-- **Local-first**: All data lives in `~/.cortex/memory.db` on your machine
-- **No telemetry**: Cortex sends zero data to any server unless you enable sync
-- **No code reading**: Cortex never reads your source code. It only stores structured memories that Claude explicitly saves via MCP tools
-- **Encrypted credentials**: Turso sync tokens are encrypted with AES-256-GCM using a machine-derived key
-- **Localhost-only API**: The REST API binds exclusively to `127.0.0.1:7434`
-- **CORS restricted**: Only `localhost`, `file://`, and `vscode-webview://` origins are allowed
-
-### What Cortex Does NOT Do
-
-- Read or index your source code
-- Send data to any external server (without explicit sync setup)
-- Store API keys, passwords, or credentials (the quality gate blocks them)
-- Run with elevated permissions
-- Modify your files or project structure
-
-### Data Ownership
-
-Your memory database is a single SQLite file at `~/.cortex/memory.db`. You own it entirely. Export with `cortex export`, back it up, move it, delete it. If you enable sync, the Turso database is yours too -- you create the account, you hold the credentials.
-
-## Packages
-
-Cortex is a TypeScript monorepo with 7 packages:
-
-| Package | Description |
+| Feature | Description |
 |---------|-------------|
-| `packages/server` | Daemon: MCP server, REST API, SSE, quality gate, sync worker |
-| `packages/cli` | Command-line interface (Commander.js) |
-| `packages/shared` | Shared types, schemas, constants, and utilities |
-| `packages/dashboard` | Next.js web dashboard |
-| `packages/web` | Marketing site and documentation |
-| `packages/vscode` | VS Code extension |
-| `packages/electron` | Electron desktop app (Windows/Linux) |
+| **MCP Server** | 5 tools exposed to Claude Code via the Model Context Protocol |
+| **6 Memory Types** | Decision, Context, Preference, Thread, Error, Learning — each with its own lifecycle |
+| **Quality Gate** | 7 validation rules block duplicates, sensitive data, and low-quality saves |
+| **Session Summarizer** | AI reviews completed sessions and captures missed context |
+| **Project Detection** | 4-layer strategy (git remote → package.json → directory name → manual) |
+| **33 CLI Commands** | Full terminal interface for browsing, searching, editing, and exporting memories |
+| **Web Dashboard** | Next.js dashboard on localhost:7433 — search, filter, edit, bulk operations |
+| **Multi-Machine Sync** | Optional Turso-powered sync across your machines (you own the database) |
+| **VS Code Extension** | Memory sidebar, inline context, quick save from the editor |
+| **Desktop App** | Native Electron app with system tray integration |
+| **Local First** | SQLite on your machine. Nothing leaves unless you enable sync |
+| **Clean Uninstall** | `cortex uninstall` removes everything — database, daemon, config, MCP registration |
 
-## Roadmap
+## Configuration
 
-### Shipped
-
-- [x] MCP server with 7 tools (save, get, search, list, delete, supersede, update)
-- [x] Quality gate with 6 rules
-- [x] Full-text search via FTS5
-- [x] REST API with 20+ endpoints
-- [x] SSE real-time events
-- [x] CLI with 30+ commands
-- [x] Turso cloud sync with conflict resolution
-- [x] Session summarizer
-- [x] Memory templates
-- [x] Analytics and insights
-- [x] Export/import
-- [x] Doctor diagnostics (8 checks)
-- [x] Memory linking across projects
-- [x] Timeline view
-- [x] Pin/unpin memories
-- [x] Memory ratings
-
-### Coming Next
-
-- [ ] VS Code extension (hover to peek, gutter icons)
-- [ ] Native SwiftUI Mac app
-- [ ] Electron desktop app (Windows/Linux)
-- [ ] Next.js dashboard
-- [ ] Interactive TUI for memory review
-- [ ] Memory decay and auto-archival
-- [ ] Semantic search with embeddings
-- [ ] Team memory sharing
-- [ ] Plugin system for custom quality rules
-
-## Development
+Cortex works out of the box with zero configuration. For those who want to customize:
 
 ```bash
-# Clone
-git clone https://github.com/ProductionLineHQ/cortex.git
-cd cortex
+# Show current configuration
+cortex config show
 
-# Install dependencies
-pnpm install
+# Set custom MCP server port (default: 7434)
+cortex config set port 7434
 
-# Build all packages
-pnpm build
+# Set dashboard port (default: 7433)
+cortex config set dashboard.port 7433
 
-# Run tests
-pnpm test
+# Enable multi-machine sync
+cortex config set sync.enabled true
+cortex config set sync.url libsql://your-db.turso.io
+cortex config set sync.token your-turso-auth-token
 
-# Type checking
-pnpm typecheck
-
-# Development mode (watch)
-pnpm dev
+# Adjust quality gate thresholds
+cortex config set quality.minLength 50
+cortex config set quality.maxLength 2000
+cortex config set quality.similarityThreshold 0.85
+cortex config set quality.rateLimit.perSession 50
 ```
 
-**Requirements**: Node.js >= 18, pnpm >= 9
+Configuration is stored in `~/.cortex/config.json`. Project-specific overrides go in `.cortex/config.json` in your project root.
+
+## CLI Reference
+
+```bash
+# Project management
+cortex init                    # Initialize Cortex in the current project
+cortex status                  # Show daemon status, memory counts, sync state
+cortex doctor                  # Diagnose and fix common issues
+
+# Memory operations
+cortex show [project]          # Browse memories for a project
+cortex search <query>          # Full-text search across all projects
+cortex add                     # Manually add a memory
+cortex edit <id>               # Edit an existing memory
+cortex delete <id>             # Delete a memory
+cortex clear [project]         # Delete all memories (with backup prompt)
+
+# Data management
+cortex export [project]        # Export memories as JSON
+cortex import <file>           # Import memories from a JSON file
+cortex backup                  # Create a timestamped database backup
+
+# Daemon control
+cortex start                   # Start the background daemon
+cortex stop                    # Stop the daemon
+cortex restart                 # Restart the daemon
+cortex logs                    # View daemon logs
+
+# Sync
+cortex sync status             # Show sync state
+cortex sync push               # Push local changes to Turso
+cortex sync pull               # Pull remote changes
+
+# Utilities
+cortex config show             # Show configuration
+cortex config set <key> <val>  # Update a config value
+cortex uninstall               # Remove Cortex completely (with export option)
+cortex --version               # Print version
+```
+
+Run `cortex help <command>` for detailed usage of any command.
+
+## FAQ
+
+**Does this send my code to your servers?**
+
+No. Cortex runs entirely on your machine. The MCP server listens on localhost only. Your memories are stored in a local SQLite database at `~/.cortex/cortex.db`. The only time data leaves your machine is if you explicitly enable Turso sync — and even then, you create the Turso database yourself and own the credentials. We never see your data.
+
+**What happens if I uninstall?**
+
+Run `cortex uninstall`. It removes the database, stops the daemon, deletes the config directory, and unregisters the MCP server from Claude Code. Before deletion, it offers to export all your memories to a JSON file. Nothing is left behind. If you installed via Homebrew, also run `brew uninstall cortex-memory`.
+
+**Does it work with projects that don't use git?**
+
+Yes. Cortex uses a 4-layer project detection strategy: git remote URL (most reliable), package.json name field, directory name, or manual assignment via `cortex init --name my-project`. Git is preferred but not required.
+
+**How is this different from just keeping a notes file?**
+
+A notes file requires you to remember to write things down, to organize them, and to paste them into every Claude Code session. Cortex captures context automatically during your normal workflow, validates it through a quality gate, categorizes it by type, and injects it into Claude Code without you doing anything. It also handles deduplication, expiration, importance scoring, and cross-project search — things a text file cannot do.
+
+**Will this slow down Claude Code?**
+
+No. The MCP server runs as a separate process on localhost. Context injection adds roughly 50 to 100 milliseconds to session startup — the time it takes to read from SQLite and format the response. Memory saves happen asynchronously and do not block your session. The quality gate and summarizer run after your session ends.
+
+**Can I see what's been stored?**
+
+Yes. Run `cortex show` to browse all memories for the current project, or `cortex search <query>` to find specific memories across all projects. The web dashboard at `localhost:7433` gives you a visual interface to browse, edit, delete, and export everything. Every memory includes its type, importance score, creation date, and tags. Nothing is hidden.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions from anyone. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide covering dev setup, repo structure, testing, and PR process.
+
+Quick start for contributors:
+
+```bash
+git clone https://github.com/ProductionLineHQ/cortex.git
+cd cortex
+pnpm install
+pnpm build
+pnpm test
+```
+
+The monorepo has 9 packages: `shared`, `server`, `cli`, `dashboard`, `desktop`, `electron`, `vscode`, `installer`, `web`. Each package has its own README with package-specific details.
+
+Please open an issue before starting work on anything non-trivial. This lets us coordinate and avoids duplicate effort.
 
 ## License
 
-MIT -- [The Production Line](https://www.theproductionline.ai/tools/cortex)
+MIT — [The Production Line](https://www.theproductionline.ai/tools/cortex)
 
 Built by [Koundinya Lanka](https://github.com/koundinyalanka).

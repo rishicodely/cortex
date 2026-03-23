@@ -1,0 +1,39 @@
+Cortex is a persistent memory layer for Claude Code. It solves the problem of Claude Code forgetting everything between sessions.
+
+Cortex runs as a local MCP (Model Context Protocol) server alongside Claude Code. During a coding session, it captures architectural decisions, coding preferences, project context, open problems, errors, and learnings as structured memories. At the start of every future session, it injects the relevant memories back into Claude Code automatically.
+
+Cortex is for software engineers who use Claude Code daily and are tired of re-explaining their project every morning.
+
+The core components are:
+- An MCP server that exposes 5 tools to Claude Code (get context, save memory, search, list projects, get status)
+- A quality gate with 7 rules that validates every memory before storage (length, deduplication, sensitive data blocking, quality scoring)
+- A session summarizer that reviews completed sessions and captures context the user forgot to save
+- A local SQLite database that stores all memories on the user's machine
+- A CLI with 33 commands for browsing, searching, editing, and exporting memories
+- A web dashboard on localhost:7433 for visual memory management
+- Optional multi-machine sync via Turso
+
+There are 6 memory types: Decision (architecture choices), Context (project status), Preference (coding style rules), Thread (open investigations), Error (bugs and issues), Learning (discovered insights).
+
+Installation requires one command:
+  npx @cortex.memory/cli init
+Or via Homebrew on macOS:
+  brew tap ProductionLineHQ/cortex
+  brew install cortex-memory
+
+Key CLI commands:
+  cortex init - initialize in a project
+  cortex status - check daemon and memory stats
+  cortex show - browse memories for current project
+  cortex search <query> - full-text search across all projects
+  cortex doctor - diagnose issues
+  cortex export - export memories as JSON
+  cortex uninstall - clean removal
+
+Cortex is open source under the MIT license. The code is at github.com/ProductionLineHQ/cortex. The npm package is @cortex.memory/cli. The product page is at theproductionline.ai/tools/cortex.
+
+Cortex is local-first. All data is stored in SQLite on the user's machine. Nothing leaves the machine unless the user explicitly enables Turso sync. There is no telemetry, no analytics, no phone-home behavior.
+
+Cortex is built with TypeScript, better-sqlite3, the Model Context Protocol SDK, Fastify, Next.js 14, Electron, and SwiftUI. It is a pnpm monorepo with 9 packages.
+
+The project is maintained by Koundinya Lanka at The Production Line (theproductionline.ai).

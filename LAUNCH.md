@@ -1,6 +1,6 @@
 # Launch Playbook — Cortex v1.0.0
 
-> Internal document. Not committed to repo. Use these posts on launch day.
+> Internal document. Copy-paste these posts on launch day.
 
 ---
 
@@ -8,38 +8,28 @@
 
 **Title:**
 ```
-Show HN: Cortex – Persistent memory for Claude Code (open source)
+Show HN: Cortex – Persistent memory for Claude Code (open source, local-first)
 ```
 
-**Post body:**
-```
-Hey HN,
+**First comment (post this immediately after submitting):**
 
-I built Cortex because I got tired of re-explaining my architecture to Claude Code every morning.
+I built Cortex because I was spending the first 20 minutes of every Claude Code session re-explaining my project. Architecture decisions I made last week, naming conventions, why I chose one library over another — all gone. Every morning, blank slate.
 
-Claude Code is incredible at coding, but every session starts from zero. No memory of yesterday's decisions. No awareness of your preferences. No knowledge of the open threads from last week. You re-explain everything, every time.
+Cortex is a local MCP server that runs alongside Claude Code. During a session, it captures decisions, preferences, and context as structured memories. Next session, it injects the relevant ones back automatically. Claude starts every conversation knowing where you left off.
 
-Cortex fixes this. It's a local daemon that runs alongside Claude Code, captures decisions/preferences/context as structured memories, and silently injects them into every new session via MCP. Your AI starts every conversation fully informed.
+The interesting engineering problem was the quality gate. Without it, the memory database fills up with noise — "I will now implement the function" is not a useful memory. So every save passes through 7 validation rules: content length bounds, duplicate detection using TF-IDF cosine similarity, a sensitive data blocker (rejects API keys, passwords, tokens), a quality scorer that checks for specificity and technical content, and rate limiting. The quality gate is the reason this works in practice and not just in demos.
 
-Key design decisions:
+Architecture: TypeScript monorepo, SQLite via better-sqlite3 on your machine, Fastify REST API, MCP protocol for the Claude Code integration. Optional Turso sync for multi-machine setups — you create the database, you own the credentials. Nothing goes through our servers.
 
-- Local-first: SQLite on your machine. Nothing leaves unless you enable sync.
-- Quality gate: 6-rule engine prevents garbage memories (length, duplicates, sensitive data, quality score).
-- Multi-machine sync: Optional Turso-powered sync. You own the database — we never see your data.
-- One command install: `npx @cortex.memory/cli init`
+I am looking for feedback on two things: (1) are the default quality gate thresholds right, or do they reject too much / too little? (2) what memory types am I missing beyond the current six (Decision, Context, Preference, Thread, Error, Learning)?
 
-Tech stack: TypeScript monorepo (9 packages), SQLite via better-sqlite3, Fastify REST API, MCP protocol, Next.js dashboard, SwiftUI Mac app, VS Code extension.
-
-Open source, MIT licensed.
+Install: `npx @cortex.memory/cli init`
 
 Repo: https://github.com/ProductionLineHQ/cortex
-```
 
 ---
 
-## 2. Reddit Posts
-
-### r/ClaudeAI
+## 2. Reddit r/ClaudeAI
 
 **Title:**
 ```
@@ -47,50 +37,104 @@ I built an open-source persistent memory layer for Claude Code — it remembers 
 ```
 
 **Body:**
-```
-Claude Code is amazing but stateless. Every session = blank slate. I built Cortex to fix that.
 
-What it does:
-- Runs as a local MCP server alongside Claude Code
-- Captures decisions, preferences, open threads as structured memories
-- Injects relevant context at the start of every session
-- Quality gate ensures only useful memories are saved (blocks duplicates, sensitive data, low-quality content)
-- Optional multi-machine sync via Turso (you own the DB)
+I have been using Claude Code as my primary coding tool for the past few months. It is genuinely good at writing code. But every session starts from zero. I would explain my architecture, my conventions, why I made certain decisions — and the next morning I would do it all again.
 
-One command install:
-npx @cortex.memory/cli init
+So I built Cortex. It runs as a local MCP server alongside Claude Code and does two things:
 
-Open source (MIT): https://github.com/ProductionLineHQ/cortex
+1. During a session, it captures decisions, preferences, and context as structured memories
+2. At the start of every new session, it injects the relevant memories back
 
-Built with TypeScript, SQLite, Fastify, MCP protocol. Also includes a Next.js dashboard, VS Code extension, and native SwiftUI Mac app.
+The result: Claude starts every conversation knowing your project. No re-explaining, no pasting old conversations, no context files.
 
-Would love feedback from other Claude Code users. What context do you find yourself re-explaining the most?
-```
+A few things that matter to this community:
 
-### r/programming
+- It is local-first. SQLite on your machine. Nothing leaves unless you opt into sync.
+- There is a quality gate (7 rules) that prevents garbage from being stored. It blocks duplicates, sensitive data, and low-quality content.
+- 33 CLI commands and a web dashboard for managing everything.
+- One command install: `npx @cortex.memory/cli init`
+- Open source, MIT licensed.
 
-**Title:**
-```
-Cortex: Open-source persistent memory for Claude Code — local-first SQLite, MCP protocol, quality-gated memories
-```
+Honest limitations: it does not work with the Claude web interface, only Claude Code (the CLI/IDE tool). The summarizer sometimes misses context. And the quality gate is opinionated — you might disagree with the thresholds.
 
-### r/opensource
+Repo: https://github.com/ProductionLineHQ/cortex
 
-**Title:**
-```
-Just open-sourced Cortex — a persistent memory layer for Claude Code (TypeScript, SQLite, MCP, MIT license)
-```
+What context do you find yourself re-explaining the most? I want to make sure the memory types cover the right categories.
 
 ---
 
-## 3. X/Twitter Thread
+## 3. Reddit r/LocalLLaMA
+
+**Title:**
+```
+Open-source persistent memory for Claude Code — local SQLite, no cloud, nothing leaves your machine
+```
+
+**Body:**
+
+For those who care about local-first AI tooling: I built a persistent memory layer for Claude Code that stores everything locally.
+
+How it works: Cortex runs as a local daemon on your machine. It provides tools to Claude Code via the MCP protocol. During your coding session, it captures architectural decisions, coding preferences, project context — and stores them in a local SQLite database at `~/.cortex/cortex.db`.
+
+Next session, Claude Code reads the relevant memories and starts fully informed. No re-explaining your project.
+
+Privacy model:
+
+- All storage is local SQLite. No remote database.
+- MCP server binds to localhost only. No external connections.
+- Zero telemetry. No analytics, no crash reporting, no phone-home.
+- Quality gate blocks API keys, passwords, and tokens from being stored.
+- Optional multi-machine sync uses Turso — but you create the database and own the credentials. We never see your data.
+- Clean uninstall removes everything: `cortex uninstall`
+
+One command install: `npx @cortex.memory/cli init`
+
+TypeScript, MIT licensed, 9 packages in a pnpm monorepo.
+
+Repo: https://github.com/ProductionLineHQ/cortex
+
+---
+
+## 4. Product Hunt
+
+**Tagline (60 chars):**
+```
+Persistent memory for Claude Code. Open source.
+```
+
+**Description (260 chars):**
+```
+Claude Code forgets everything between sessions. Cortex fixes that. Local MCP server that captures decisions, context, and preferences — and injects them back automatically. Local-first SQLite, quality-gated, open source.
+```
+
+**Maker's first comment (300 words):**
+
+I built Cortex because I was tired of starting every Claude Code session from scratch.
+
+Claude Code is the best AI coding tool I have used. But it has a fundamental limitation: no persistent memory. Every session starts from zero. Your architecture decisions from last week, your coding conventions, the bug you were investigating — all gone.
+
+For the past three months, I found myself spending the first 15 to 20 minutes of every session re-explaining context. That is roughly 6 hours a month of wasted time, just re-establishing what the AI should already know.
+
+Cortex is a local MCP server that solves this. It runs alongside Claude Code and does two things: captures important context during your sessions (decisions, preferences, open threads), and injects the relevant memories back at the start of every future session.
+
+The hardest part was the quality gate. Without it, the memory database fills up with noise. So every memory passes through 7 validation rules — content length, duplicate detection, sensitive data blocking, quality scoring, and rate limiting. This is what separates Cortex from "just save everything to a text file."
+
+Technical details for those interested: TypeScript monorepo, SQLite via better-sqlite3, MCP protocol for Claude Code integration, Fastify REST API, Next.js dashboard, 33 CLI commands. Everything runs on your machine. Nothing leaves unless you opt into Turso sync.
+
+What is next: multi-machine sync is almost ready, the VS Code extension is in beta, and team sharing (shared memory spaces for engineering teams) is on the roadmap for Q2.
+
+It is open source and MIT licensed. Install with one command: `npx @cortex.memory/cli init`
+
+I would love your feedback on what memory types are missing and whether the quality gate thresholds feel right.
+
+---
+
+## 5. X/Twitter Thread
 
 ```
-Thread: 🧵
-
 1/ I just open-sourced Cortex — persistent memory for Claude Code.
 
-Every Claude Code session starts from zero. No memory of yesterday. Cortex fixes that.
+Every session starts from zero. Cortex fixes that.
 
 One command: npx @cortex.memory/cli init
 
@@ -100,11 +144,11 @@ github.com/ProductionLineHQ/cortex
 
 Claude Code is brilliant at coding. But it has amnesia.
 
-Every morning you re-explain your architecture, your preferences, your conventions. It's like hiring a genius contractor who forgets everything overnight.
+Every morning you re-explain your architecture, your preferences, your conventions. It is like hiring a genius contractor who forgets everything overnight.
 
 3/ How Cortex works:
 
-- Runs as a local daemon (localhost:7434)
+- Runs as a local daemon on localhost:7434
 - Provides MCP tools to Claude Code
 - Captures decisions, preferences, context as structured memories
 - Injects relevant memories at session start
@@ -113,13 +157,14 @@ Your AI starts every conversation fully informed.
 
 4/ The quality gate is what makes it work:
 
-6 rules. Every memory must pass:
-✓ Length (50-2000 chars)
-✓ No banned phrases ("I will now...")
-✓ No sensitive data (API keys, passwords)
-✓ Quality score (specificity, technical terms)
-✓ No duplicates (TF-IDF similarity check)
-✓ Rate limit (50/session, 200/day)
+7 rules. Every memory must pass:
+- Length (50-2000 chars)
+- No banned phrases
+- No sensitive data (API keys, passwords)
+- Quality score (specificity, technical terms)
+- No duplicates (TF-IDF similarity check)
+- Rate limit (50/session, 200/day)
+- Reason field required
 
 5/ Local-first architecture:
 
@@ -130,145 +175,89 @@ Your AI starts every conversation fully informed.
 - AES-256-GCM encrypted credentials
 - Zero telemetry by default
 
-6/ What's included (it's a full platform):
+6/ What you get:
 
-- CLI with 30+ commands
-- Next.js dashboard
-- VS Code extension
-- Native SwiftUI Mac app
-- Electron desktop app
-- Session summarizer (AI reviews what you missed)
-- Multi-machine Turso sync
+- MCP server with 5 tools
+- 6 memory types (Decision, Context, Preference, Thread, Error, Learning)
+- 33 CLI commands
+- Next.js web dashboard
+- Session summarizer
+- Quality gate
+- Multi-machine sync (coming)
 
-7/ Tech stack for the curious:
-
-- TypeScript monorepo (9 packages)
-- SQLite via better-sqlite3
-- Fastify REST API + SSE
-- MCP protocol (Model Context Protocol)
-- Next.js 14 dashboard
-- SwiftUI (macOS 13+)
-- Electron + electron-builder
-- Zod validation on every endpoint
-
-8/ It's MIT licensed and fully open source.
+7/ It is MIT licensed and fully open source.
 
 If you use Claude Code, give it a try:
 
 npx @cortex.memory/cli init
 
-Star if useful: github.com/ProductionLineHQ/cortex
-
-Built by @[your_handle] at The Production Line.
+github.com/ProductionLineHQ/cortex
 ```
 
 ---
 
-## 4. LinkedIn Post
+## 6. LinkedIn Post
 
 ```
 I just open-sourced Cortex — a persistent memory layer for Claude Code.
 
 The problem: Claude Code starts every session from zero. No memory of previous conversations, no awareness of past decisions, no knowledge of your preferences.
 
-For engineering teams, this means 15-30 minutes per developer per day re-establishing context. For a team of 10, that's 2.5-5 hours of lost productivity every single day.
+For engineering teams, this means 15 to 30 minutes per developer per day re-establishing context. For a team of 10, that is 2.5 to 5 hours of lost productivity every single day.
 
 Cortex fixes this by running a local daemon that captures decisions, preferences, and context as structured memories — then silently injects them into every new session.
 
 Key principles:
-→ Local-first: SQLite on your machine, nothing leaves unless you enable sync
-→ Quality-gated: 6-rule engine prevents low-quality or duplicate memories
-→ Privacy-respecting: zero telemetry, you own your data, clean uninstall
-→ One command install: npx @cortex.memory/cli init
+- Local-first: SQLite on your machine, nothing leaves unless you enable sync
+- Quality-gated: 7-rule engine prevents low-quality or duplicate memories
+- Privacy-respecting: zero telemetry, you own your data, clean uninstall
+- One command install: npx @cortex.memory/cli init
 
 For CTOs and engineering leaders: this is the tool that makes your team's AI investment compound over time instead of resetting every morning.
 
 Open source (MIT): https://github.com/ProductionLineHQ/cortex
-
-#AI #DeveloperTools #ClaudeCode #OpenSource #Engineering
+Product page: https://www.theproductionline.ai/tools/cortex
 ```
 
 ---
 
-## 5. Dev.to / Hashnode Article
-
-**Title:**
-```
-I Built Persistent Memory for Claude Code — Here's the Architecture
-```
-
-**Outline:**
-1. The problem (2 paragraphs — relatable pain)
-2. The solution (what Cortex does)
-3. Architecture deep dive (ASCII diagram, data flow)
-4. Quality gate design (6 rules, why each matters)
-5. Sync architecture (Turso, conflict resolution)
-6. Security model (local-first, encrypted credentials)
-7. What's next (roadmap)
-8. Try it: `npx @cortex.memory/cli init`
-
----
-
-## 6. Launch Day Checklist
+## 7. Launch Day Checklist
 
 ### Pre-launch (day before):
-- [ ] Verify repo looks good on GitHub (README renders, badges work)
-- [ ] Star your own repo (yes, seriously — first star matters)
+- [ ] Verify repo looks good on GitHub (README renders, badges work, topics set)
+- [ ] Set repo description and topics from GITHUB_METADATA.md
+- [ ] Upload social preview image (use /api/og/cortex screenshot)
 - [ ] Enable GitHub Discussions
-- [ ] Create 3-5 "good first issue" labels
+- [ ] Create 5 "good first issue" labels with real issues
+- [ ] Star your own repo
 - [ ] Tweet a teaser: "Shipping something tomorrow for Claude Code users..."
 
-### Launch day (morning):
-- [ ] Submit to Hacker News (Show HN) — aim for 8-9am ET
+### Launch day (morning, 8-9am ET Tuesday-Thursday):
+- [ ] Submit to Hacker News (Show HN)
+- [ ] Post the first comment immediately after HN submission
 - [ ] Post to r/ClaudeAI
-- [ ] Post to r/programming
-- [ ] Post to r/opensource
+- [ ] Post to r/LocalLLaMA
 - [ ] Post X/Twitter thread
-- [ ] Post LinkedIn article
+- [ ] Post LinkedIn
 - [ ] Reply to every comment within 1 hour
 
 ### Launch day (afternoon):
 - [ ] Check HN ranking — if on front page, engage in comments
-- [ ] Cross-post to Dev.to or Hashnode
-- [ ] Share in relevant Discord/Slack communities
+- [ ] Post to r/programming and r/opensource
 - [ ] Email newsletter subscribers (Issue #3)
+- [ ] Share in Anthropic Discord
 
 ### Post-launch (week 1):
 - [ ] Respond to every GitHub issue within 24 hours
-- [ ] Thank every starrer in discussions
 - [ ] Ship at least one improvement based on feedback
-- [ ] Write a "lessons learned" follow-up post
+- [ ] Submit to Product Hunt (once you have 50+ stars)
+- [ ] Write a Dev.to article: "I Built Persistent Memory for Claude Code — Here's the Architecture"
 
----
-
-## 7. Good First Issues (create these on GitHub)
-
-1. **Add `cortex history` command** — show memory creation history by date
-2. **Add memory export to CSV** — currently JSON only, add CSV option
-3. **Dashboard: dark/light theme toggle** — add a button in the dashboard header
-4. **CLI: add `cortex count` command** — quick memory count without full status
-5. **Improve error message when Node < 18** — current message could be friendlier
-6. **Add `--verbose` flag to more CLI commands** — currently only on doctor
-7. **Dashboard: keyboard shortcuts** — Cmd+K for search, Cmd+N for new memory
-
----
-
-## 8. Communities to Share In
-
-| Community | Where | Timing |
-|---|---|---|
-| Hacker News | news.ycombinator.com/submit | Tuesday-Thursday, 8-9am ET |
-| r/ClaudeAI | reddit.com/r/ClaudeAI | Same day as HN |
-| r/programming | reddit.com/r/programming | Same day |
-| r/opensource | reddit.com/r/opensource | Same day |
-| X/Twitter | Thread from your account | Same day, after HN |
-| LinkedIn | Personal post + The Production Line page | Same day |
-| Dev.to | dev.to/new | Day after launch |
-| Anthropic Discord | discord.gg/anthropic | Day after launch |
-| Claude Code GitHub Discussions | github.com/anthropics/claude-code | Week after (be helpful, not spammy) |
-| IndieHackers | indiehackers.com | Week after |
-| Product Hunt | producthunt.com | 2 weeks after (once you have traction) |
-
----
-
-*Launch day target: 50+ stars in 24 hours. Week 1 target: 200+ stars.*
+### Good First Issues (create these before launch):
+1. Add `cortex history` command — show memory creation history by date
+2. Add memory export to CSV — currently JSON only
+3. Dashboard: dark/light theme toggle
+4. CLI: add `cortex count` command — quick memory count
+5. Improve error message when Node < 18
+6. Add `--verbose` flag to more CLI commands
+7. Dashboard: keyboard shortcuts (Cmd+K for search)

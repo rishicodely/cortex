@@ -1,37 +1,28 @@
-## Summary
+## What does this PR do?
 
-Brief description of the changes and the motivation behind them.
+<!-- One or two sentences. Link to the issue if there is one. -->
 
-Fixes # (issue number)
+## Why?
 
-## Type of Change
+<!-- What problem does this solve? Why is this approach the right one? -->
 
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
-- [ ] Documentation update
-- [ ] Performance improvement
-- [ ] Refactoring (no functional changes)
+## How to test it
 
-## How Has This Been Tested?
+<!-- Steps a reviewer can follow to verify this works. -->
 
-Describe the tests you ran to verify your changes.
+1.
+2.
+3.
 
-- [ ] Unit tests pass (`pnpm test`)
-- [ ] Lint passes (`pnpm lint`)
-- [ ] Type check passes (`pnpm typecheck`)
-- [ ] Manual testing with Claude Code
+## Screenshots / recordings
+
+<!-- If this changes UI (dashboard, CLI output, VS Code extension), include a screenshot or recording. Delete this section if not applicable. -->
 
 ## Checklist
 
-- [ ] My code follows the project's style guidelines
-- [ ] I have performed a self-review of my code
-- [ ] I have added tests that prove my fix is effective or my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] I have updated documentation where needed
-- [ ] My changes generate no new warnings
-- [ ] Any dependent changes have been merged and published
-
-## Screenshots (if applicable)
-
-Add screenshots for UI changes in the dashboard or VS Code extension.
+- [ ] Tests pass (`pnpm test`)
+- [ ] Types pass (`pnpm typecheck`)
+- [ ] Lint passes (`pnpm lint`)
+- [ ] CHANGELOG.md updated (if user-facing change)
+- [ ] Docs updated (if behavior changed)
+- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
