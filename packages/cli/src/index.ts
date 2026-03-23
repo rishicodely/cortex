@@ -14,10 +14,7 @@ const VERSION = pkg.version;
 const program = new Command();
 const api = new APIClient();
 
-program
-  .name('cortex')
-  .description('Cortex — persistent memory for Claude Code')
-  .version(VERSION);
+program.name('cortex').description('Cortex — persistent memory for Claude Code').version(VERSION);
 
 /**
  * Ensure daemon is running before executing a command.
@@ -39,9 +36,7 @@ async function resolveProjectId(nameOrId?: string): Promise<string | undefined> 
   if (!nameOrId && projects.data.length > 0) return projects.data[0].id;
   if (!nameOrId) return undefined;
   if (nameOrId.includes('-')) return nameOrId;
-  const match = projects.data.find(
-    (p: any) => p.name.toLowerCase() === nameOrId.toLowerCase(),
-  );
+  const match = projects.data.find((p: any) => p.name.toLowerCase() === nameOrId.toLowerCase());
   return match ? match.id : nameOrId;
 }
 
@@ -64,6 +59,25 @@ program
     fmt.info(`DB size: ${health.db_size_mb} MB`);
     fmt.info(`Uptime: ${health.uptime_s}s`);
     fmt.info(`Schema: v${health.schema_version}`);
+  });
+
+// ──────────────────────────────────────────
+// COUNT
+// ──────────────────────────────────────────
+program
+  .command('count')
+  .description('Show memory count')
+  .option('--json', 'Output as JSON')
+  .action(async (opts) => {
+    if (!(await ensureDaemon())) return;
+
+    const health = await api.health();
+
+    if (opts.json) {
+      return fmt.jsonOutput({ total: health.memory_count });
+    }
+
+    console.log(health.memory_count);
   });
 
 // ──────────────────────────────────────────
@@ -274,11 +288,15 @@ program
         tags: opts.tags ? opts.tags.split(',').map((t: string) => t.trim()) : [],
         project_id: opts.project,
       });
-      if (opts.json) return fmt.jsonOutput({ data: { id: result.data.id, type: opts.type, content: text } });
+      if (opts.json)
+        return fmt.jsonOutput({ data: { id: result.data.id, type: opts.type, content: text } });
       fmt.success(`Memory saved: ${result.data.id}`);
     } catch (err) {
       if (err instanceof APIError) {
-        fmt.error(err.message, err.code === 'QUALITY_GATE_FAILED' ? 'Make the content more specific' : undefined);
+        fmt.error(
+          err.message,
+          err.code === 'QUALITY_GATE_FAILED' ? 'Make the content more specific' : undefined,
+        );
       } else {
         throw err;
       }
@@ -370,7 +388,8 @@ program
         content,
         reason: opts.reason,
       });
-      if (opts.json) return fmt.jsonOutput({ data: { old_id: id, new_id: result.data.new?.id || 'created' } });
+      if (opts.json)
+        return fmt.jsonOutput({ data: { old_id: id, new_id: result.data.new?.id || 'created' } });
       fmt.success(`Memory superseded. New ID: ${result.data.new?.id || 'created'}`);
     } catch (err) {
       if (err instanceof APIError) fmt.error(err.message);
@@ -634,7 +653,11 @@ program
 
       // Check 3: Schema version
       fmt.success(`Schema version: v${h.schema_version}`);
-      checks.push({ name: 'schema', status: 'pass', message: `Schema version: v${h.schema_version}` });
+      checks.push({
+        name: 'schema',
+        status: 'pass',
+        message: `Schema version: v${h.schema_version}`,
+      });
       passed++;
 
       // Check 4: Memory count
@@ -688,7 +711,11 @@ program
       passed++;
     } else {
       fmt.error(`Node.js: v${nodeVersion} — requires >= 18`, 'Download from nodejs.org');
-      checks.push({ name: 'node_version', status: 'fail', message: `v${nodeVersion} — requires >= 18` });
+      checks.push({
+        name: 'node_version',
+        status: 'fail',
+        message: `v${nodeVersion} — requires >= 18`,
+      });
       failed++;
     }
 
@@ -739,7 +766,12 @@ program
     const { exec } = await import('node:child_process');
     const platform = process.platform;
 
-    const cmd = platform === 'darwin' ? `open ${url}` : platform === 'win32' ? `start ${url}` : `xdg-open ${url}`;
+    const cmd =
+      platform === 'darwin'
+        ? `open ${url}`
+        : platform === 'win32'
+          ? `start ${url}`
+          : `xdg-open ${url}`;
     exec(cmd);
     fmt.success(`Opening dashboard at ${url}`);
   });
@@ -779,7 +811,10 @@ program
 
     if (!opts.force) {
       const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-      const cleanup = () => { rl.close(); process.exit(0); };
+      const cleanup = () => {
+        rl.close();
+        process.exit(0);
+      };
       process.on('SIGINT', cleanup);
       try {
         const scope = projectId ? `project ${projectId}` : 'ALL projects';
@@ -879,7 +914,9 @@ sync
       if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         if (config.subscriber?.email_hash) {
-          const expiresAt = config.subscriber.expires_at ? new Date(config.subscriber.expires_at) : null;
+          const expiresAt = config.subscriber.expires_at
+            ? new Date(config.subscriber.expires_at)
+            : null;
           if (expiresAt && expiresAt > new Date()) {
             hasSubscriber = true;
           } else {
@@ -902,7 +939,10 @@ sync
     fmt.info('Enter your Turso credentials (get them at ProductionLineHQ.ai).\n');
 
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    const cleanup = () => { rl.close(); process.exit(0); };
+    const cleanup = () => {
+      rl.close();
+      process.exit(0);
+    };
     process.on('SIGINT', cleanup);
     let url: string;
     let token: string;
@@ -1019,37 +1059,124 @@ template
   .action(async (name, opts) => {
     const templateSets: Record<string, { type: string; content: string; importance: number }[]> = {
       'typescript-monorepo': [
-        { type: 'decision', content: 'Use pnpm workspaces for monorepo management with turbo for build orchestration', importance: 8 },
-        { type: 'preference', content: 'Shared TypeScript config in packages/tsconfig with composite project references', importance: 7 },
-        { type: 'context', content: 'Package naming convention: @scope/package-name. All packages publishable with provenance', importance: 6 },
-        { type: 'decision', content: 'Shared ESLint and Prettier configs in packages/eslint-config and packages/prettier-config', importance: 6 },
+        {
+          type: 'decision',
+          content: 'Use pnpm workspaces for monorepo management with turbo for build orchestration',
+          importance: 8,
+        },
+        {
+          type: 'preference',
+          content:
+            'Shared TypeScript config in packages/tsconfig with composite project references',
+          importance: 7,
+        },
+        {
+          type: 'context',
+          content:
+            'Package naming convention: @scope/package-name. All packages publishable with provenance',
+          importance: 6,
+        },
+        {
+          type: 'decision',
+          content:
+            'Shared ESLint and Prettier configs in packages/eslint-config and packages/prettier-config',
+          importance: 6,
+        },
       ],
       'nestjs-api': [
-        { type: 'decision', content: 'NestJS with modular architecture: each feature in its own module with controller, service, and DTOs', importance: 8 },
-        { type: 'preference', content: 'Use class-validator and class-transformer for request validation and serialization', importance: 7 },
-        { type: 'context', content: 'Guards for auth, interceptors for logging/transforms, pipes for validation. Global exception filter for consistent error responses', importance: 7 },
-        { type: 'decision', content: 'TypeORM with PostgreSQL. Migrations committed to source control, never auto-sync in production', importance: 8 },
+        {
+          type: 'decision',
+          content:
+            'NestJS with modular architecture: each feature in its own module with controller, service, and DTOs',
+          importance: 8,
+        },
+        {
+          type: 'preference',
+          content:
+            'Use class-validator and class-transformer for request validation and serialization',
+          importance: 7,
+        },
+        {
+          type: 'context',
+          content:
+            'Guards for auth, interceptors for logging/transforms, pipes for validation. Global exception filter for consistent error responses',
+          importance: 7,
+        },
+        {
+          type: 'decision',
+          content:
+            'TypeORM with PostgreSQL. Migrations committed to source control, never auto-sync in production',
+          importance: 8,
+        },
       ],
       'nextjs-app': [
-        { type: 'decision', content: 'Next.js App Router with server components by default. Client components only when interactivity needed', importance: 8 },
-        { type: 'preference', content: 'Use server actions for mutations, React Query for client-side data fetching with stale-while-revalidate', importance: 7 },
-        { type: 'context', content: 'Route groups for layout organization: (auth), (dashboard), (marketing). Parallel routes for modals', importance: 6 },
+        {
+          type: 'decision',
+          content:
+            'Next.js App Router with server components by default. Client components only when interactivity needed',
+          importance: 8,
+        },
+        {
+          type: 'preference',
+          content:
+            'Use server actions for mutations, React Query for client-side data fetching with stale-while-revalidate',
+          importance: 7,
+        },
+        {
+          type: 'context',
+          content:
+            'Route groups for layout organization: (auth), (dashboard), (marketing). Parallel routes for modals',
+          importance: 6,
+        },
       ],
       'aws-cdk': [
-        { type: 'decision', content: 'AWS CDK v2 with TypeScript. One stack per environment, shared constructs in lib/ directory', importance: 8 },
-        { type: 'preference', content: 'Use cdk-nag for security compliance checks. All resources tagged with project, environment, and owner', importance: 7 },
-        { type: 'context', content: 'CDK Pipelines for CI/CD with self-mutation. Separate bootstrap per account/region', importance: 7 },
+        {
+          type: 'decision',
+          content:
+            'AWS CDK v2 with TypeScript. One stack per environment, shared constructs in lib/ directory',
+          importance: 8,
+        },
+        {
+          type: 'preference',
+          content:
+            'Use cdk-nag for security compliance checks. All resources tagged with project, environment, and owner',
+          importance: 7,
+        },
+        {
+          type: 'context',
+          content:
+            'CDK Pipelines for CI/CD with self-mutation. Separate bootstrap per account/region',
+          importance: 7,
+        },
       ],
       'tauri-app': [
-        { type: 'decision', content: 'Tauri 2 with React frontend. Rust commands for system-level operations, TypeScript for UI logic', importance: 8 },
-        { type: 'preference', content: 'Use Tauri plugin system for capabilities: fs, shell, dialog, notification. Scoped permissions in capabilities/', importance: 7 },
-        { type: 'context', content: 'IPC via invoke() for Rust commands and event system for async communication. Serde for serialization', importance: 7 },
+        {
+          type: 'decision',
+          content:
+            'Tauri 2 with React frontend. Rust commands for system-level operations, TypeScript for UI logic',
+          importance: 8,
+        },
+        {
+          type: 'preference',
+          content:
+            'Use Tauri plugin system for capabilities: fs, shell, dialog, notification. Scoped permissions in capabilities/',
+          importance: 7,
+        },
+        {
+          type: 'context',
+          content:
+            'IPC via invoke() for Rust commands and event system for async communication. Serde for serialization',
+          importance: 7,
+        },
       ],
     };
 
     const memories = templateSets[name];
     if (!memories) {
-      fmt.error(`Unknown template: "${name}".`, `Available: ${Object.keys(templateSets).join(', ')}`);
+      fmt.error(
+        `Unknown template: "${name}".`,
+        `Available: ${Object.keys(templateSets).join(', ')}`,
+      );
       return;
     }
 
@@ -1066,7 +1193,9 @@ template
 
     const projectId = opts.project || (await resolveProjectId());
     if (!projectId) {
-      fmt.error('No project found. Open Claude Code in a project folder first, or use --project <id>.');
+      fmt.error(
+        'No project found. Open Claude Code in a project folder first, or use --project <id>.',
+      );
       return;
     }
 
@@ -1087,7 +1216,8 @@ template
       }
     }
 
-    if (opts.json) return fmt.jsonOutput({ data: { template: name, created, total: memories.length } });
+    if (opts.json)
+      return fmt.jsonOutput({ data: { template: name, created, total: memories.length } });
     fmt.success(`Template "${name}" applied: ${created}/${memories.length} memories created.`);
   });
 
@@ -1127,7 +1257,10 @@ program
 
     if (!opts.force) {
       const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-      const cleanup = () => { rl.close(); process.exit(0); };
+      const cleanup = () => {
+        rl.close();
+        process.exit(0);
+      };
       process.on('SIGINT', cleanup);
       try {
         const answer = await rl.question('Type DELETE to confirm uninstalling Cortex: ');
@@ -1206,10 +1339,17 @@ program
         fmt.warn('Could not reach npm registry. You may be offline.');
         return;
       }
-      const data = await res.json() as { version?: string };
+      const data = (await res.json()) as { version?: string };
       const latestVersion = data.version || currentVersion;
 
-      if (opts.json) return fmt.jsonOutput({ data: { current: currentVersion, latest: latestVersion, update_available: latestVersion !== currentVersion } });
+      if (opts.json)
+        return fmt.jsonOutput({
+          data: {
+            current: currentVersion,
+            latest: latestVersion,
+            update_available: latestVersion !== currentVersion,
+          },
+        });
       if (latestVersion === currentVersion) {
         fmt.success(`You are running the latest version (${currentVersion}).`);
       } else {
@@ -1289,7 +1429,9 @@ program
       console.log(fmt.formatMemory(m, true));
       console.log();
     }
-    fmt.info('Interactive TUI review coming soon. For now, use cortex edit <id> to update memories.');
+    fmt.info(
+      'Interactive TUI review coming soon. For now, use cortex edit <id> to update memories.',
+    );
   });
 
 // ──────────────────────────────────────────
@@ -1335,7 +1477,9 @@ program
         fmt.dim('  ' + '─'.repeat(40));
         for (const m of memories) {
           const time = m.created_at ? m.created_at.split('T')[1]?.substring(0, 5) : '';
-          console.log(`  ${time}  ${fmt.typeBadge(m.type)} ${m.content.substring(0, 80)}${m.content.length > 80 ? '...' : ''}`);
+          console.log(
+            `  ${time}  ${fmt.typeBadge(m.type)} ${m.content.substring(0, 80)}${m.content.length > 80 ? '...' : ''}`,
+          );
         }
       }
       console.log();
@@ -1473,9 +1617,7 @@ program
     const configPath = path.join(configDir, 'config.json');
 
     // Hash the email with SHA-256
-    const emailHash = createHash('sha256')
-      .update(email.toLowerCase().trim())
-      .digest('hex');
+    const emailHash = createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
 
     fmt.info(`Verifying subscription for ${email}...`);
 
@@ -1488,7 +1630,10 @@ program
       });
 
       if (!res.ok) {
-        fmt.error('Verification service returned an error.', 'Try again later or check your connection.');
+        fmt.error(
+          'Verification service returned an error.',
+          'Try again later or check your connection.',
+        );
         return;
       }
 
@@ -1516,9 +1661,12 @@ program
         }
         fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
 
-        if (opts.json) return fmt.jsonOutput({ data: { verified: true, expires_at: data.expires_at || null } });
+        if (opts.json)
+          return fmt.jsonOutput({ data: { verified: true, expires_at: data.expires_at || null } });
         fmt.success('Subscription verified! Sync features are now unlocked.');
-        fmt.info(`Token expires: ${data.expires_at ? new Date(data.expires_at).toLocaleDateString() : '30 days'}`);
+        fmt.info(
+          `Token expires: ${data.expires_at ? new Date(data.expires_at).toLocaleDateString() : '30 days'}`,
+        );
       } else {
         fmt.error(
           'Email not found in subscriber list.',
